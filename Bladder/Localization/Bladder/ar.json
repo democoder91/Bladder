@@ -1,0 +1,25 @@
+{
+  "culture": "ar",
+  "texts": {
+    "Welcome_Title": "مرحبا",
+    "Welcome_Text": "هذا هو قالب بدء تشغيل تطبيق ذو طبقة واحدة مبسط لإطار عمل ABP.",
+    "Menu:Home": "الصفحة الرئيسية",
+    "Menu:Machines": "ماكينات البناء",
+    // machines
+    "Machines": "ماكينات البناء",
+    "Filters": "الفلاتر",
+    "Machine Code": "كود الماكينة",
+    "Filter": "بحث",
+    "Reset": "الغاء",
+    "Building Machines": "ماكينات البناء",
+    "Create New Machine": "إنشاء ماكينة جديدة",
+    "Action": "إجراء",
+    "Edit": "تعديل",
+    "No Machines Available": "لا تتوفر ماكينات",
+    "Create": "إنشاء",
+    "Cancel": "إلغاء",
+    "Edit Machine": "تعديل ماكينة",
+    "Delete": "حذف"
+
+  }
+}

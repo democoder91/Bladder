@@ -1,0 +1,223 @@
+﻿@page "/Machines/Index"
+@using Bladder.Entities;
+@using Bladder.Services;
+@inherits BladderComponentBase
+@inject IBuildingMachineService  machineService;
+@inject IJSRuntime jsRuntime
+@attribute [Authorize("Machine_Index")]
+<h1>@L["Machines"]</h1>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2>@L["Filters"]</h2>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <div class="label">@L["Machine Code"]</div>
+            <InputText @bind-Value="@MachineCodeFilter" class="form-control" />
+        </div>
+
+        <div class="d-fex flex-row">
+            <a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a>
+            <a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <div class="d-flex flex-row justify-content-between  ">
+            <div>
+                <h2>@L["Building Machines"]</h2>
+            </div>            
+            <AuthorizeView Policy="Machine_Create">
+                <div>
+                    <a @onclick="ShowCreateModal" class="btn btn-primary">@L["Create New Machine"]</a>
+                </div>
+            </AuthorizeView>        
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table ">
+            <thead>
+                <tr>
+                    <th>@L["Machine Code"]</th>
+                    <th>@L["Action"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Machines.Count() > 0)
+                {
+                    @foreach (var machine in Machines)
+                    {
+                        <tr>
+                            <td>@machine.Code</td>
+                            <td>
+                                <AuthorizeView Policy="Machine_Edit">
+                                    <button class="btn btn-link" @onclick="() => ShowEditModal(machine)">@L["Edit"]</button>
+                                </AuthorizeView>
+                            </td>
+                        </tr>
+                    }
+
+                }
+                else
+                {
+                    <span>@L["No Machines Available"]</span>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<Modal @ref="createModalRef">
+    <div class="container card">
+        <ModalHeader Class="card-header"><h3>@L["Create New Machine"]</h3></ModalHeader>
+        <ModalBody Class="card-body">
+            <div class="form-group">
+                <label for="machineCode">@L["Machine Code"]</label>
+                <InputText @bind-Value="@newMachineCode" class="form-control" id="machineCode" />
+            </div>
+        </ModalBody>
+        <ModalFooter Class="card-footer">
+            <button class="btn btn-primary" @onclick="CreateMachine">@L["Create"]</button>
+            <button class="btn btn-secondary" @onclick="HideCreateModal">@L["Cancel"]</button>
+        </ModalFooter>
+    </div>
+</Modal>
+
+<Modal @ref="editModalRef">
+    <div class="container card">
+        <ModalHeader Class="card-header"><h3>@L["Edit Machine"]</h3></ModalHeader>
+        <ModalBody Class="card-body">
+            <div class="form-group">
+                <label for="editMachineCode">@L["Machine Code"]</label>
+                <InputText @bind-Value="@editMachineCode" class="form-control" id="editMachineCode" />
+            </div>
+        </ModalBody>
+        <ModalFooter Class="card-footer">
+            <button class="btn btn-primary" @onclick="UpdateMachine">@L["Edit"]</button>
+            <AuthorizeView Policy="Machine_Delete">
+                <button class="btn btn-danger" @onclick="ConfirmDelete">@L["Delete"]</button>
+            </AuthorizeView>            <button class="btn btn-secondary" @onclick="HideEditModal">@L["Cancel"]</button>
+        </ModalFooter>
+    </div>
+</Modal>
+
+
+
+
+@code{
+    public List<BuildingMachine> Machines { get; set; } = new();
+    public string MachineCodeFilter { get; set; } = string.Empty;
+
+    private Modal createModalRef;
+    private string newMachineCode = string.Empty;
+
+    private Modal editModalRef;
+    private BuildingMachine selectedMachine; // Track the selected machine for editing
+    private string editMachineCode = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Machines = await machineService.GetAllAsync();
+    }
+    public void ApplyFilters()
+    {
+        Machines = Machines.Where(m => m.Code.Contains(MachineCodeFilter)).ToList();
+        StateHasChanged();
+    }
+    public async void ClearFilters()
+    {
+        Machines = await machineService.GetAllAsync();
+        StateHasChanged();
+
+    }
+
+    private void ShowCreateModal()
+    {
+        newMachineCode = string.Empty; // Clear the input field
+        createModalRef.Show();
+    }
+
+    private void HideCreateModal()
+    {
+        createModalRef.Hide();
+    }
+
+    private async Task CreateMachine()
+    {
+        if (!string.IsNullOrWhiteSpace(newMachineCode))
+        {
+            // Create a new BuildingMachine instance and set the code
+            BuildingMachine newMachine = new BuildingMachine
+                {
+                    Code = newMachineCode
+                };
+
+            // Call the service to add the new machine
+            await machineService.CreateAsync(newMachine);
+
+            // Refresh the machine list
+            Machines = await machineService.GetAllAsync();
+
+            // Hide the modal
+            createModalRef.Hide();
+        }
+    }
+
+    private void ShowEditModal(BuildingMachine machine)
+    {
+        selectedMachine = machine;
+        editMachineCode = machine.Code;
+        editModalRef.Show();
+    }
+
+    private void HideEditModal()
+    {
+        selectedMachine = null;
+        editMachineCode = string.Empty;
+        editModalRef.Hide();
+    }
+
+    private async Task UpdateMachine()
+    {
+        if (selectedMachine != null && !string.IsNullOrWhiteSpace(editMachineCode))
+        {
+            // Update the selected machine's code
+            selectedMachine.Code = editMachineCode;
+
+            // Call the service to update the machine
+            await machineService.UpdateAsync(selectedMachine);
+
+            // Refresh the machine list
+            Machines = await machineService.GetAllAsync();
+
+            // Hide the edit modal
+            HideEditModal();
+        }
+    }
+
+    private async Task ConfirmDelete()
+    {
+        var result = await jsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this machine?");
+        if (result)
+        {
+            // User confirmed the deletion, proceed with deletion logic
+            await DeleteMachine(selectedMachine);
+        }
+    }
+
+    private async Task DeleteMachine(BuildingMachine machine)
+    {
+        // Call the service to delete the machine
+        await machineService.DeleteAsync(machine.Id);
+
+        // Refresh the machine list
+        Machines = await machineService.GetAllAsync();
+
+        // Hide the edit modal
+        HideEditModal();
+    }
+
+    
+}
