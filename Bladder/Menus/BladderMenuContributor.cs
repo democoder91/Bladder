@@ -31,16 +31,23 @@ public class BladderMenuContributor : IMenuContributor
                 order: 0
             )
         );
+        
         context.Menu.Items.Insert(
-            1,
-            new ApplicationMenuItem(
-                BladderMenus.Machines,
-                l["Menu:Machines"],
-                "/Machines/Index",
-                icon: "fa fa-cogs",
-                order: 1
+        1,
+        new ApplicationMenuItem(
+            BladderMenus.Machines,
+            l["Menu:Machines"],
+            "/Machines/Index",
+            icon: "fa fa-cogs",
+            order: 1 ,
+            null,
+            null,
+            null,
+            null,
+            "Machine_Index"
             )
         );
+        
 
         if (BladderModule.IsMultiTenant)
         {
