@@ -6,7 +6,7 @@
     "Menu:Home": "الصفحة الرئيسية",
     "Menu:Machines": "ماكينات البناء",
     "Menu:Bladders": "بلادرات البناء",
-    "Menu:Findings": "نتائج الكشف",
+    "Menu:Findings": "الاكتشافات",
     "Master Data": "البيانات الاساسية",
     "this field is required": "هذا الحقل مطلوب",
 
@@ -40,7 +40,18 @@
     "Bladder Deleted Successfully": "تم حذف البلادر بنجاح",
     "Bladder Code Must Be Unique": "كود البلادر موجود بالفعل",
     "Are you sure you want to delete this bladder?": "هل انت متاكد من حذف البلادر ؟",
-    "BladderCode must be unique": "كود البلادر موجود بالفعل"
+    "BladderCode must be unique": "كود البلادر موجود بالفعل",
+    "Findings": "الاكتشافات",
+    "Finding Description": "وصف الاكتشاف",
+    "Create New Finding": "إنشاء اكتشاف جديد",
+    "Finding Icon": "أيقونة الاكتشاف",
+    "No Findings Available": "لا توجد اكتشافات متاحة",
+    "Are you sure you want to delete this finding?": "هل أنت متأكد أنك تريد حذف هذا الاكتشاف؟",
+    "Finding Deleted Successfully": "تم حذف الاكتشاف بنجاح",
+    "Font Awesome Icon Class": " أيقونة Font Awesome",
+    "Description": "الوصف",
+    "dont Know where to get the icons ? ": "لا تعرف اين تجد الايقونات ؟ ",
+    "click here": "اضغط هنا"
 
   }
 }
