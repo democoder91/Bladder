@@ -4,6 +4,9 @@
     "Welcome_Title": "Welcome",
     "Welcome_Text": "This is a minimalist, single layer application startup template for the ABP Framework.",
     "Menu:Home": "Home",
-    "Menu:Machines": "Machines"
+    "Menu:Machines": "Machines",
+    "Menu:Bladders": "Bladders",
+    "Menu:Findings": "Findings",
+    "Validation.Required": "This field is required."
   }
 }

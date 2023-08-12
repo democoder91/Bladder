@@ -1,0 +1,197 @@
+﻿@page "/Bladders/Index"
+@using Bladder.Constants;
+@using Bladder.Entities;
+@using Bladder.Services;
+@using Volo.Abp.AspNetCore.Components.Notifications;
+@inherits BladderComponentBase
+@inject IBuildingBladderService bladderService;
+@inject IJSRuntime jsRuntime
+@inject IUiNotificationService uiNotificationService
+@attribute [Authorize("Bladder_Index")]
+<h1>@L["Bladders"]</h1>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2>@L["Filters"]</h2>
+    </div>
+    <div class="card-body">
+        <Row>
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Bladder Code"]</div>
+                    <InputText @bind-Value="@BladderCodeFilter" class="form-control" />
+                </div>
+            </Column>
+
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Expiry Date From"]</div>
+                    <InputDate @bind-Value="@ExpiryDateFromFilter" class="form-control" />
+                </div>
+            </Column>
+
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Expiry Date To"]</div>
+                    <InputDate @bind-Value="@ExpiryDateToFilter" class="form-control" />
+                </div>
+            </Column>
+
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Status"]</div>
+                    <InputSelect @bind-Value="@StatusFilter" class="form-control">
+                        <option value="">Select Status</option>
+                        @foreach (var status in Enum.GetValues(typeof(BladderStatus)))
+                        {
+                        <option value="@status.ToString()">@status.ToString()</option>
+                        }
+                    </InputSelect>
+                </div>
+            </Column>
+        </Row>
+
+        <div class="d-fex flex-row">
+            <a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a>
+            <a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <div class="d-flex flex-row justify-content-between  ">
+            <div>
+                <h2>@L["Building Bladders"]</h2>
+            </div>
+            <AuthorizeView Policy="Bladder_Create">
+                <div>
+                    <a href="/Bladders/Create" class="btn btn-primary">@L["Create New Bladder"]</a>
+                </div>
+            </AuthorizeView>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table ">
+            <thead>
+                <tr>
+                    <th>@L["Bladder Code"]</th>
+                    <th>@L["Expiry Date"]</th>
+                    <th>@L["Status"]</th>
+                    <th>@L["Action"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Bladders.Count() > 0)
+                {
+                    @foreach (var bladder in Bladders)
+                    {
+                        <tr>
+                            <td>@bladder.BladderCode</td>
+                            <td>@bladder.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                            <td>@bladder.Status</td>
+                            <td>
+                                <AuthorizeView Policy="Bladder_Edit">
+                                    <a href="/Bladders/Edit/@bladder.Id" class="btn btn-link">@L["Edit"]</a>
+                                </AuthorizeView>
+                                <AuthorizeView Policy="Bladder_Delete">
+                                    <a @onclick="()=> ConfirmDelete(bladder.Id)" class="btn btn-link">@L["Delete"]</a>
+                                </AuthorizeView>
+                            </td>
+                        </tr>
+                    }
+
+                }
+                else
+                {
+                    <span>@L["No Bladders Available"]</span>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+
+
+@code {
+    public List<BuildingBladder> Bladders { get; set; } = new();
+    public string? BladderCodeFilter { get; set; } = string.Empty;
+    public DateTime? ExpiryDateFromFilter { get; set; }
+    public DateTime? ExpiryDateToFilter { get; set; }
+    public string? StatusFilter { get; set; } = string.Empty;
+
+
+
+    private BuildingBladder selectedBladder = new(); // Track the selected bladder for editing
+    private string editBladderCode = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Bladders = await bladderService.GetAllAsync();
+    }
+    public async Task ApplyFilters()
+    {
+
+        Bladders = await bladderService.GetAllAsync();
+        var query = Bladders.AsQueryable();
+        if (BladderCodeFilter != string.Empty)
+        {
+            query = query.Where(b => b.BladderCode.Contains(BladderCodeFilter));
+        }
+        if (ExpiryDateFromFilter is not null)
+        {
+            query = query.Where(b => b.ExpiryDate > ExpiryDateFromFilter);
+        }
+        if (ExpiryDateToFilter is not null)
+        {
+            query = query.Where(b => b.ExpiryDate <= ExpiryDateToFilter);
+        }
+        if (!StatusFilter.IsNullOrEmpty() )
+        {
+            query = query.Where(b => b.Status == StatusFilter);
+        }
+
+        Bladders = query.ToList();
+
+
+        StateHasChanged();
+    }
+    public async void ClearFilters()
+    {
+        Bladders = await bladderService.GetAllAsync();
+        BladderCodeFilter = null;
+        ExpiryDateFromFilter = null;
+        ExpiryDateToFilter = null;
+        StatusFilter = null;
+        StateHasChanged();
+
+    }
+
+
+    private async Task ConfirmDelete(int id)
+    {
+        var result = await jsRuntime.InvokeAsync<bool>("confirm", L["Are you sure you want to delete this bladder?"].ToString());
+        if (result)
+        {
+            // User confirmed the deletion, proceed with deletion logic
+            await DeleteBladder(id);
+        }
+    }
+
+    private async Task DeleteBladder(int id)
+    {
+        // Call the service to delete the bladder
+        await bladderService.DeleteAsync(id);
+
+        // Refresh the bladder list
+        Bladders = await bladderService.GetAllAsync();
+
+        // Hide the edit modal
+        await uiNotificationService.Success(@L["Bladder Deleted Successfully"]);
+    }
+
+
+}

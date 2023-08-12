@@ -1,0 +1,87 @@
+﻿@page "/Bladders/Edit/{id:int}"
+@using Bladder.Data;
+@using Bladder.Entities;
+@using Bladder.Constants;
+@using Bladder.Services;
+@using Volo.Abp.AspNetCore.Components.Notifications;
+@attribute [Authorize("Bladder_Create")]
+@inject IBuildingBladderService bladderService;
+@inject BladderDbContext dbContext;
+@inject NavigationManager navigationManager;
+@inject IUiNotificationService uiNotificationService
+
+
+@inherits BladderComponentBase
+
+<div class="card">
+    <div class="card-header">
+        <h3>@L["Create New Bladder"]</h3>
+    </div>
+    <div class="card-body">
+        <EditForm Model="Bladder" OnValidSubmit="UpdateBladder">
+            <DataAnnotationsValidator />
+
+            <Row>
+                <Column>
+                    <div class="form-group">
+                        <label class="form-label">@L["Bladder Code"]</label>
+                        <InputText @bind-Value="Bladder.BladderCode" class="form-control" />
+                        <ValidationMessage style="color:red;" For="() => Bladder.BladderCode" />
+                    </div>
+                </Column>
+                <Column>
+                    <div class="form-group">
+                        <label class="form-label">@L["Expiry Date"]</label>
+                        <InputDate @bind-Value="Bladder.ExpiryDate" class="form-control" />
+                        <ValidationMessage style="color:red;" For="() => Bladder.ExpiryDate" />
+                    </div>
+                </Column>
+                <Column>
+                    <dd>
+                        <dl>@L["Status"] :</dl>
+                        <dt>@Bladder.Status</dt>
+                    </dd>
+                </Column>
+
+                
+            </Row>
+            <div class="d-flex flex-row justify-content-md-center">
+                <div class="form-group mx-1">
+                    <button type="submit" class="btn btn-primary">@L["Edit"]</button>
+                </div>
+                <div class="form-group mx-1">
+                    <a href="/Bladders/Index" class="btn btn-secondary">@L["Cancel"]</a>
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    public BuildingBladder Bladder { get; set; } = new() { ExpiryDate = DateTime.Now };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id != 0)
+        {
+            Bladder = await bladderService.GetAsync(Id);
+        }
+    }
+
+    public async Task UpdateBladder()
+    {
+        var existingBladder = dbContext.Set<BuildingBladder>()
+                        .FirstOrDefault(b => b.Id != Bladder.Id && b.BladderCode == Bladder.BladderCode);
+
+        if (existingBladder != null)
+        {
+            await uiNotificationService.Error(L["Bladder Code Must Be Unique"]);
+            return;
+        }
+        await bladderService.UpdateAsync(Bladder);
+        navigationManager.NavigateTo("/Bladders/Index", true);
+    }
+
+}

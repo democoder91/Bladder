@@ -1,0 +1,64 @@
+﻿@page "/Machines/Create"
+@using Bladder.Data;
+@using Bladder.Entities;
+@using Bladder.Constants;
+@using Bladder.Services;
+@using Volo.Abp.AspNetCore.Components.Notifications;
+@attribute [Authorize("Machine_Create")]
+@inject IBuildingMachineService machineService;
+@inject BladderDbContext dbContext;
+@inject NavigationManager navigationManager;
+@inject IUiNotificationService uiNotificationService
+
+
+@inherits BladderComponentBase
+
+<div class="card">
+    <div class="card-header">
+        <h3>@L["Create New Machine"]</h3>
+    </div>
+    <div class="card-body">
+        <EditForm Model="Machine" OnValidSubmit="CreateMachine">
+            <DataAnnotationsValidator />
+
+            <Row>
+                <Column>
+                    <div class="form-group">
+                        <label class="form-label">@L["Machine Code"]</label>
+                        <InputText @bind-Value="Machine.Code" class="form-control" />
+                        <ValidationMessage style="color:red;" For="@(() => Machine.Code)" />
+                    </div>
+                </Column>
+                
+            </Row>
+            <div class="d-flex flex-row justify-content-md-center">
+                <div class="form-group mx-1">
+                    <button type="submit" class="btn btn-primary">@L["Create"]</button>
+                </div>
+                <div class="form-group mx-1">
+                    <a href="/Machines/Index" class="btn btn-secondary">@L["Cancel"]</a>
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    public BuildingMachine Machine { get; set; } = new() ;
+    public async Task CreateMachine()
+    {
+        var existingMachine = dbContext.Set<BuildingMachine>()
+                        .FirstOrDefault(b => b.Id != Machine.Id && b.Code == Machine.Code);
+
+        if (existingMachine != null)
+        {
+            await uiNotificationService.Error(L["Machine Code Must Be Unique"]);
+            return;
+        }
+        await machineService.CreateAsync(Machine);
+        navigationManager.NavigateTo("/Machines/Index", true);
+    }
+    
+
+}

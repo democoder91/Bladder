@@ -22,6 +22,7 @@ public class Program
             .WriteTo.Async(c => c.File("Logs/logs.txt"))
             .WriteTo.Async(c => c.Console());
 
+
         if (IsMigrateDatabase(args))
         {
             loggerConfiguration.MinimumLevel.Override("Volo.Abp", LogEventLevel.Warning);
@@ -33,11 +34,14 @@ public class Program
         try
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            
             builder.Services.AddScoped<IBuildingMachineService, BuildingMachineService>();
+            builder.Services.AddScoped<IBuildingBladderService, BuildingBladderService>();
+            builder.Services.AddScoped<IFindingService, FindingService>();
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();
+            
             if (IsMigrateDatabase(args))
             {
                 builder.Services.AddDataMigrationEnvironment();

@@ -5,6 +5,11 @@
     "Welcome_Text": "هذا هو قالب بدء تشغيل تطبيق ذو طبقة واحدة مبسط لإطار عمل ABP.",
     "Menu:Home": "الصفحة الرئيسية",
     "Menu:Machines": "ماكينات البناء",
+    "Menu:Bladders": "بلادرات البناء",
+    "Menu:Findings": "نتائج الكشف",
+    "Master Data": "البيانات الاساسية",
+    "this field is required": "هذا الحقل مطلوب",
+
     // machines
     "Machines": "ماكينات البناء",
     "Filters": "الفلاتر",
@@ -19,7 +24,23 @@
     "Create": "إنشاء",
     "Cancel": "إلغاء",
     "Edit Machine": "تعديل ماكينة",
-    "Delete": "حذف"
+    "Delete": "حذف",
+    // Bladders 
+    "Bladders": "البلادرات",
+    "Bladder Code": "رمز البلادر",
+    "Expiry Date From": "تاريخ الانتهاء من",
+    "Expiry Date To": "تاريخ الانتهاء إلى",
+    "Status": "الحالة",
+    "Building Bladders": "بلادرات البناء",
+    "Create New Bladder": "إنشاء بلادر جديدة",
+    "No Bladders Available": "لا تتوفر بلادرات",
+    "Expiry Date": "تاريخ الانتهاء",
+    "Edit Bladder": "تعديل البلادر",
+    "Bladder Status": "حالة البلادر",
+    "Bladder Deleted Successfully": "تم حذف البلادر بنجاح",
+    "Bladder Code Must Be Unique": "كود البلادر موجود بالفعل",
+    "Are you sure you want to delete this bladder?": "هل انت متاكد من حذف البلادر ؟",
+    "BladderCode must be unique": "كود البلادر موجود بالفعل"
 
   }
 }

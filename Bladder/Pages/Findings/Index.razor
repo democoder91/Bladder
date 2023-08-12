@@ -1,14 +1,14 @@
-﻿@page "/Machines/Index"
+﻿@page "/Findings/Index"
 @using Bladder.Constants;
 @using Bladder.Entities;
 @using Bladder.Services;
 @using Volo.Abp.AspNetCore.Components.Notifications;
 @inherits BladderComponentBase
-@inject IBuildingMachineService machineService;
+@inject IFindingService findingService;
 @inject IJSRuntime jsRuntime
 @inject IUiNotificationService uiNotificationService
-@attribute [Authorize("Machine_Index")]
-<h1>@L["Machines"]</h1>
+@attribute [Authorize("Finding_Index")]
+<h1>@L["Findings"]</h1>
 
 <div class="card shadow-sm">
     <div class="card-header">
@@ -18,8 +18,8 @@
         <Row>
             <Column>
                 <div class="form-group">
-                    <div class="label">@L["Machine Code"]</div>
-                    <InputText @bind-Value="@MachineCodeFilter" class="form-control" />
+                    <div class="label">@L["Finding Description"]</div>
+                    <InputText @bind-Value="@FindingDescriptionFilter" class="form-control" />
                 </div>
             </Column>
         </Row>
@@ -35,11 +35,11 @@
     <div class="card-header">
         <div class="d-flex flex-row justify-content-between  ">
             <div>
-                <h2>@L["Building Machines"]</h2>
+                <h2>@L["Findings"]</h2>
             </div>
-            <AuthorizeView Policy="Machine_Create">
+            <AuthorizeView Policy="Finding_Create">
                 <div>
-                    <a href="/Machines/Create" class="btn btn-primary">@L["Create New Machine"]</a>
+                    <a href="/Findings/Create" class="btn btn-primary">@L["Create New Finding"]</a>
                 </div>
             </AuthorizeView>
         </div>
@@ -48,24 +48,28 @@
         <table class="table ">
             <thead>
                 <tr>
-                    <th>@L["Machine Code"]</th>
+                    <th>@L["Finding Icon"]</th>
+                    <th>@L["Finding Description"]</th>
                     
                     <th>@L["Action"]</th>
                 </tr>
             </thead>
             <tbody>
-                @if (Machines.Count() > 0)
+                @if (Findings.Count() > 0)
                 {
-                    @foreach (var machine in Machines)
+                    @foreach (var finding in Findings)
                     {
                         <tr>
-                            <td>@machine.Code</td>
                             <td>
-                                <AuthorizeView Policy="Machine_Edit">
-                                    <a href="/Machines/Edit/@machine.Id" class="btn btn-link">@L["Edit"]</a>
+                                <div class="@finding.IconClass"></div>
+                            </td>
+                            <td>@finding.Description</td>
+                            <td>
+                                <AuthorizeView Policy="Finding_Edit">
+                                    <a href="/Findings/Edit/@finding.Id" class="btn btn-link">@L["Edit"]</a>
                                 </AuthorizeView>
-                                <AuthorizeView Policy="Machine_Delete">
-                                    <a @onclick="()=> ConfirmDelete(machine.Id)" class="btn btn-link">@L["Delete"]</a>
+                                <AuthorizeView Policy="Finding_Delete">
+                                    <a @onclick="()=> ConfirmDelete(finding.Id)" class="btn btn-link">@L["Delete"]</a>
                                 </AuthorizeView>
                             </td>
                         </tr>
@@ -74,7 +78,7 @@
                 }
                 else
                 {
-                    <span>@L["No Machines Available"]</span>
+                    <span>@L["No Findings Available"]</span>
                 }
             </tbody>
         </table>
@@ -87,36 +91,36 @@
 
 
 @code {
-    public List<BuildingMachine> Machines { get; set; } = new();
-    public string? MachineCodeFilter { get; set; } = string.Empty;
+    public List<Finding> Findings { get; set; } = new();
+    public string? FindingDescriptionFilter { get; set; } = string.Empty;
 
 
 
 
     protected override async Task OnInitializedAsync()
     {
-        Machines = await machineService.GetAllAsync();
+        Findings = await findingService.GetAllAsync();
     }
     public async Task ApplyFilters()
     {
 
-        Machines = await machineService.GetAllAsync();
-        var query = Machines.AsQueryable();
-        if (MachineCodeFilter != string.Empty)
+        Findings = await findingService.GetAllAsync();
+        var query = Findings.AsQueryable();
+        if (string.IsNullOrEmpty(FindingDescriptionFilter))
         {
-            query = query.Where(b => b.Code.Contains(MachineCodeFilter));
+            query = query.Where(b => b.Description.Contains(FindingDescriptionFilter));
         }
         
 
-        Machines = query.ToList();
+        Findings = query.ToList();
 
 
         StateHasChanged();
     }
     public async void ClearFilters()
     {
-        Machines = await machineService.GetAllAsync();
-        MachineCodeFilter = null;
+        Findings = await findingService.GetAllAsync();
+        FindingDescriptionFilter = null;
         StateHasChanged();
 
     }
@@ -124,7 +128,7 @@
 
     private async Task ConfirmDelete(int id)
     {
-        var result = await jsRuntime.InvokeAsync<bool>("confirm", L["Are you sure you want to delete this machine?"].ToString());
+        var result = await jsRuntime.InvokeAsync<bool>("confirm", L["Are you sure you want to delete this finding?"].ToString());
         if (result)
         {
             // User confirmed the deletion, proceed with deletion logic
@@ -135,13 +139,13 @@
     private async Task DeleteBladder(int id)
     {
         // Call the service to delete the bladder
-        await machineService.DeleteAsync(id);
+        await findingService.DeleteAsync(id);
 
         // Refresh the bladder list
-        Machines = await machineService.GetAllAsync();
+        Findings = await findingService.GetAllAsync();
 
         // Hide the edit modal
-        await uiNotificationService.Success(@L["Machine Deleted Successfully"]);
+        await uiNotificationService.Success(@L["Finding Deleted Successfully"]);
     }
 
 

@@ -6,13 +6,29 @@ namespace Bladder.Constants
     {
         public override void Define(IPermissionDefinitionContext context)
         {
-            var myGroup = context.AddGroup("Machine");
+            var machine = context.AddGroup("Machine");
 
-            myGroup.AddPermission("Machine_Index");
-            myGroup.AddPermission("Machine_Create");
-            myGroup.AddPermission("Machine_Edit");
-            myGroup.AddPermission("Machine_Show");
-            myGroup.AddPermission("Machine_Delete");
+            machine.AddPermission("Machine_Index");
+            machine.AddPermission("Machine_Create");
+            machine.AddPermission("Machine_Edit");
+            machine.AddPermission("Machine_Show");
+            machine.AddPermission("Machine_Delete");
+
+            var bladder = context.AddGroup("Bladder");
+
+            bladder.AddPermission("Bladder_Index");
+            bladder.AddPermission("Bladder_Create");
+            bladder.AddPermission("Bladder_Edit");
+            bladder.AddPermission("Bladder_Show");
+            bladder.AddPermission("Bladder_Delete");
+
+            var finding = context.AddGroup("Finding");
+
+            finding.AddPermission("Finding_Index");
+            finding.AddPermission("Finding_Create");
+            finding.AddPermission("Finding_Edit");
+            finding.AddPermission("Finding_Show");
+            finding.AddPermission("Finding_Delete");
         }
     }
 }

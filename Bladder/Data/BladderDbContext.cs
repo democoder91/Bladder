@@ -20,6 +20,8 @@ public class BladderDbContext : AbpDbContext<BladderDbContext>
     }
 
     public DbSet<BuildingMachine> Machines { get; set; }
+    public DbSet<BuildingBladder> Bladders { get; set; }
+    public DbSet<Finding> Finding { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

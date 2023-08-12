@@ -31,23 +31,43 @@ public class BladderMenuContributor : IMenuContributor
                 order: 0
             )
         );
+        context.Menu.AddGroup(
+                new ApplicationMenuGroup(
+                    name: "MasterData",
+                    displayName: l["Master Data"]
+                )
+            );
+        context.Menu.AddItem(
+                new ApplicationMenuItem("Bladder", l["Master Data"], groupName: "MasterData")
+                    .AddItem(new ApplicationMenuItem(
+                        name: "Bladder.Machines",
+                        displayName: l["Menu:Machines"],
+                        url: "/Machines/Index",
+                        requiredPermissionName: "Machine_Index"
+                        )
+                    )
+                    .AddItem(new ApplicationMenuItem(
+                        name: "Bladder.Bladders",
+                        displayName: l["Menu:Bladders"],
+                        url: "/Bladders/Index",
+                        requiredPermissionName: "Bladder_Index"
+                        )
+                    )
+                    .AddItem(new ApplicationMenuItem(
+                        name: "Bladder.Findings",
+                        displayName: l["Menu:Findings"],
+                        url: "/Findings/Index",
+                        requiredPermissionName: "Finding_Index"
+                        )
+                    )
+
+            );
+
         
-        context.Menu.Items.Insert(
-        1,
-        new ApplicationMenuItem(
-            BladderMenus.Machines,
-            l["Menu:Machines"],
-            "/Machines/Index",
-            icon: "fa fa-cogs",
-            order: 1 ,
-            null,
-            null,
-            null,
-            null,
-            "Machine_Index"
-            )
-        );
-        
+
+
+
+
 
         if (BladderModule.IsMultiTenant)
         {

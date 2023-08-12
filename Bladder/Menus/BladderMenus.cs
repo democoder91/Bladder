@@ -7,5 +7,7 @@ public class BladderMenus
 
     //Add your menu items here...
     public const string Machines = Prefix + ".Machines";
+    public const string Bladders = Prefix + ".Bladders";
+    public const string Findings = Prefix + ".Findings";
 
 }

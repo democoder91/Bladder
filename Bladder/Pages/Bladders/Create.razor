@@ -1,0 +1,84 @@
+﻿@page "/Bladders/Create"
+@using Bladder.Data;
+@using Bladder.Entities;
+@using Bladder.Constants;
+@using Bladder.Services;
+@using Volo.Abp.AspNetCore.Components.Notifications;
+@attribute [Authorize("Bladder_Create")]
+@inject IBuildingBladderService bladderService;
+@inject BladderDbContext dbContext;
+@inject NavigationManager navigationManager;
+@inject IUiNotificationService uiNotificationService
+
+
+@inherits BladderComponentBase
+
+<div class="card">
+    <div class="card-header">
+        <h3>@L["Create New Bladder"]</h3>
+    </div>
+    <div class="card-body">
+        <EditForm Model="Bladder" OnValidSubmit="CreateBladder">
+            <DataAnnotationsValidator />
+
+            <Row>
+                <Column>
+                    <div class="form-group">
+                        <label class="form-label">@L["Bladder Code"]</label>
+                        <InputText @bind-Value="Bladder.BladderCode" class="form-control" />
+                        <ValidationMessage style="color:red;" For="@(() => Bladder.BladderCode)" />
+                    </div>
+                </Column>
+                <Column>
+                    <div class="form-group">
+                        <label class="form-label">@L["Expiry Date"]</label>
+                        <InputDate @bind-Value="Bladder.ExpiryDate" class="form-control" />
+                        <ValidationMessage style="color:red;" For="@(() => Bladder.ExpiryDate)" />
+                    </div>
+                </Column>
+
+                <Column>
+                    <div class="form-group">
+                        <label class="form-label">@L["Status"]</label>
+                        <InputSelect @bind-Value="@Bladder.Status" class="form-control">
+                            <option value="">Select Status</option>
+                            @foreach (var status in Enum.GetValues(typeof(BladderStatus)))
+                            {
+                                <option value="@status.ToString()">@status.ToString()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage style="color:red;" For="() => Bladder.Status" />
+                    </div>
+                </Column>
+            </Row>
+            <div class="d-flex flex-row justify-content-md-center">
+                <div class="form-group mx-1">
+                    <button type="submit" class="btn btn-primary">@L["Create"]</button>
+                </div>
+                <div class="form-group mx-1">
+                    <a href="/Bladders/Index" class="btn btn-secondary">@L["Cancel"]</a>
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    public BuildingBladder Bladder { get; set; } = new() { ExpiryDate = DateTime.Now };
+    public async Task CreateBladder()
+    {
+        var existingBladder = dbContext.Set<BuildingBladder>()
+                        .FirstOrDefault(b => b.Id != Bladder.Id && b.BladderCode == Bladder.BladderCode);
+
+        if (existingBladder != null)
+        {
+            await uiNotificationService.Error(L["Bladder Code Must Be Unique"]);
+            return;
+        }
+        await bladderService.CreateAsync(Bladder);
+        navigationManager.NavigateTo("/Bladders/Index", true);
+    }
+    
+
+}
