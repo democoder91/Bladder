@@ -21,16 +21,7 @@ public class BladderMenuContributor : IMenuContributor
         var administration = context.Menu.GetAdministration();
         var l = context.GetLocalizer<BladderResource>();
 
-        context.Menu.Items.Insert(
-            0,
-            new ApplicationMenuItem(
-                BladderMenus.Home,
-                l["Menu:Home"],
-                "/",
-                icon: "fas fa-home",
-                order: 0
-            )
-        );
+        
         context.Menu.AddGroup(
                 new ApplicationMenuGroup(
                     name: "MasterData",
@@ -62,8 +53,18 @@ public class BladderMenuContributor : IMenuContributor
                     )
 
             );
+        context.Menu.Items.Insert(
+            2,
+            new ApplicationMenuItem(
+                BladderMenus.BladderTransactions,
+                l["Menu:BladderTransactions"],
+                "/Transactions/Index",
+                icon: "fas fa-home",
+                requiredPermissionName:"Transaction_Index"
+            )
+        );
 
-        
+
 
 
 

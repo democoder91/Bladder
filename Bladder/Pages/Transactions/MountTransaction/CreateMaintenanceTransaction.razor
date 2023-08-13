@@ -57,7 +57,10 @@
                             </div>
                             <ValidationMessage For="()=>maintenanceFinding.FindingId"/>
                         </div>
-                        <div class="col-1"><a class="btn btn-danger " @onclick="()=>RemoveFindingSelect(maintenanceFinding)">Remove</a></div>
+                        @if (!isDisabled)
+                        {
+                            <div class="col-1"><a class="btn btn-danger " @onclick="()=>RemoveFindingSelect(maintenanceFinding)">Remove</a></div>
+                        }
 
                     </div>
                             
@@ -133,7 +136,7 @@
         MaintenanceTransaction.TransactionType = TransactionTypes.صيانة.ToString();
         await transactionService.CreateAsync(MaintenanceTransaction);
 
-        
+
 
         var selectedBladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MaintenanceTransaction.BladderId);
         if (selectedBladder != null)
@@ -152,11 +155,17 @@
 
     private void RemoveFindingSelect(MaintenanceFinding maintenanceFinding)
     {
-        MaintenanceTransaction.MaintenanceFindings.Remove(maintenanceFinding);
+        if (!isDisabled)
+        {
+            MaintenanceTransaction.MaintenanceFindings.Remove(maintenanceFinding);
+        }
     }
 
     private void ToggleDropdown( MaintenanceFinding maintenanceFinding)
     {
-        maintenanceFinding.ShowDropdown = !maintenanceFinding.ShowDropdown;
+        if (!isDisabled)
+        {
+            maintenanceFinding.ShowDropdown = !maintenanceFinding.ShowDropdown;
+        }
     }
 }

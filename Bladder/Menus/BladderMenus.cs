@@ -9,5 +9,6 @@ public class BladderMenus
     public const string Machines = Prefix + ".Machines";
     public const string Bladders = Prefix + ".Bladders";
     public const string Findings = Prefix + ".Findings";
+    public const string BladderTransactions = Prefix + ".BladderTransactions";
 
 }
