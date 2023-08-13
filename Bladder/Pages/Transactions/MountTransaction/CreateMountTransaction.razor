@@ -1,0 +1,93 @@
+﻿@page "/Transactions/CreateMountTransaction/{TransactionId:int?}"
+@attribute [Authorize("Transaction_MountCreate")]
+
+@inject IBuildingBladderService bladderService
+@inject IBuildingMachineService machineService
+@inject IBladderTransactionService transactionService
+@inject IUiNotificationService uiNotificationService
+@inject NavigationManager navigationManager
+@inject BladderDbContext context
+
+@inherits BladderComponentBase
+
+<div class="card shadow-sm" >
+    <div class="card-header">
+        <h3>@L["Create Mount Transaction"]</h3>
+    </div>
+    <div class="card-body">
+        <EditForm Model="MountTransaction" OnValidSubmit="CreateTransaction">
+            <DataAnnotationsValidator />
+
+            <RadzenRow>
+                <RadzenColumn>
+                    <div class="form-group">
+                        <label class="form-label">@L["Bladder Code"]</label>
+                        <RadzenDropDown Disabled="isDisabled" AllowClear="true" @bind-Value=MountTransaction.BladderId AllowVirtualization="true"
+                                        AllowFiltering="true" Data=@(isDisabled ? AllBladders: Bladders) TextProperty="BladderCode" ValueProperty="Id" Style="width: 100%;" />
+                        <ValidationMessage style="color:red;" For="() =>MountTransaction.BladderId " />
+                    </div>
+                </RadzenColumn>
+                
+
+                <RadzenColumn>
+                    <div class="form-group">
+                        <label class="form-label">@L["Machine Code"]</label>
+                        
+                        <RadzenDropDown Disabled="isDisabled" AllowClear="true" @bind-Value=MountTransaction.MachineId AllowVirtualization="true"
+                                        AllowFiltering="true" Data=@Machines TextProperty="Code" ValueProperty="Id" Style="width: 100%;" />
+                        <ValidationMessage style="color:red;" For="() => MountTransaction.MachineId" />
+                    </div>
+                </RadzenColumn>
+            </RadzenRow>
+
+            <div class="d-flex flex-row justify-content-md-center">
+                <div class="form-group mx-1">
+                    @if (!isDisabled)
+                    {
+                        <button type="submit" class="btn btn-primary">@L["Create Transaction"]</button>
+                    }
+                </div>
+                <div class="form-group mx-1">
+                    <a href="/Transactions/Index" class="btn btn-secondary">@L["Cancel"]</a>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int TransactionId { get; set; }
+    public MountTransaction MountTransaction { get; set; } = new();
+    public List<BuildingBladder> AllBladders { get; set; } = new List<BuildingBladder>();
+    public List<BuildingBladder> Bladders { get; set; } = new List<BuildingBladder>();
+    public List<BuildingMachine> Machines { get; set; } = new List<BuildingMachine>();
+    bool isDisabled;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (TransactionId != 0)
+        {
+            MountTransaction = await context.Set<MountTransaction>().FirstOrDefaultAsync(mt => mt.Id == TransactionId);
+            isDisabled = true;
+        }
+        Bladders = await bladderService.GetAllMountableAsync();
+        AllBladders = await bladderService.GetAllAsync();
+        Machines = await machineService.GetAllAsync();
+    }
+
+    private  async Task CreateTransaction()
+    {
+        MountTransaction.CreatedAt = DateTime.Now;
+        MountTransaction.TransactionType = TransactionTypes.تركيب.ToString();
+        transactionService.CreateAsync(MountTransaction);
+        navigationManager.NavigateTo("/Transactions/Index");
+        MountTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MountTransaction.BladderId);
+        MountTransaction.Bladder.Status = BladderStatus.يعمل.ToString();
+
+        bladderService.UpdateAsync(MountTransaction.Bladder);
+
+        
+
+    }
+}

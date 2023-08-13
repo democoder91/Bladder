@@ -10,5 +10,8 @@ namespace Bladder.Services
         Task<List<BuildingBladder>> GetAllAsync();
         Task<BuildingBladder> GetAsync(int id);
         Task UpdateAsync(BuildingBladder bladder);
+        Task<List<BuildingBladder>> GetAllMountableAsync();
+        Task<List<BuildingBladder>> GetAllDismountableAsync();
+        Task<List<BuildingBladder>> GetAllMaintainableAsync();
     }
 }

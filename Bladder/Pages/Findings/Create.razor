@@ -1,9 +1,4 @@
 ﻿@page "/Findings/Create"
-@using Bladder.Data;
-@using Bladder.Entities;
-@using Bladder.Constants;
-@using Bladder.Services;
-@using Volo.Abp.AspNetCore.Components.Notifications;
 @attribute [Authorize("Finding_Create")]
 @inject IFindingService findingService;
 @inject BladderDbContext dbContext;

@@ -1,0 +1,162 @@
+﻿@page "/Transactions/CreateMaintenanceTransaction/{TransactionId:int?}"
+@attribute [Authorize("Transaction_MaintenanceCreate")]
+
+@inject IBuildingBladderService bladderService
+@inject IBladderTransactionService transactionService
+@inject IUiNotificationService uiNotificationService
+@inject NavigationManager navigationManager
+@inject BladderDbContext context
+
+@inherits BladderComponentBase
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3>@L["Create Maintenance Transaction"]</h3>
+    </div>
+    <div class="card-body">
+        <EditForm Model="MaintenanceTransaction" OnValidSubmit="CreateTransaction">
+            <DataAnnotationsValidator />
+
+
+            <RadzenRow>
+                <RadzenColumn>
+                    <div class="form-group">
+                        <label class="form-label">@L["Bladder Code"]</label>
+                        <RadzenDropDown Disabled="isDisabled" @bind-Value=MaintenanceTransaction.BladderId AllowVirtualization="true"
+                                        AllowFiltering="true" Data=@(isDisabled ? AllBladders : Bladders) TextProperty="BladderCode" ValueProperty="Id" Style="width: 100%;" />
+                        <ValidationMessage style="color:red;" For="() =>MaintenanceTransaction.BladderId " />
+                    </div>
+                </RadzenColumn>
+            </RadzenRow>
+
+            @foreach (var maintenanceFinding in MaintenanceTransaction.MaintenanceFindings)
+            {
+                <div class="form-group">
+                    <label class="form-label">@L["Finding"]</label>
+                    <div class="row">
+                        <div class="dropdown col">
+                            <a class="form-control dropdown-toggle" @onclick="()=>ToggleDropdown(maintenanceFinding)">
+                                @(maintenanceFinding.Finding is not null ? maintenanceFinding.Finding.Description :   L["Select Finding"])
+                            </a>
+                            <div class="dropdown-menu w-100" style="display: @(maintenanceFinding.ShowDropdown ? "block" : "none")">
+                                @foreach (var finding in AvailableFindings)
+                                {
+                                    <NavLink class="dropdown-item d-flex flex-row justify-content-start" @onclick="()=> 
+                                        {
+                                            maintenanceFinding.FindingId = finding.Id;
+                                            maintenanceFinding.Finding = finding;
+                                            ToggleDropdown(maintenanceFinding);
+                                        }
+                                        ">
+                                        <div class="@finding.IconClass mx-2"></div>
+                                        <h5>@finding.Description</h5>
+
+                                    </NavLink>
+                                }
+                                        
+                            </div>
+                            <ValidationMessage For="()=>maintenanceFinding.FindingId"/>
+                        </div>
+                        <div class="col-1"><a class="btn btn-danger " @onclick="()=>RemoveFindingSelect(maintenanceFinding)">Remove</a></div>
+
+                    </div>
+                            
+                        
+                            
+                <ValidationMessage For="()=> MaintenanceTransaction.MaintenanceFindings" />        
+                </div>
+            }
+            @if (!isDisabled)
+            {
+                <a class="btn btn-success" @onclick="AddFinding">Add Finding</a>
+            }
+
+            <div class="d-flex flex-row justify-content-md-center">
+                <div class="form-group mx-1">
+                    @if (!isDisabled)
+                    {
+                        <button type="submit" class="btn btn-primary">@L["Create Transaction"]</button>
+                    }
+                </div>
+                <div class="form-group mx-1">
+                    <a href="/Transactions/Index" class="btn btn-secondary">@L["Cancel"]</a>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int TransactionId { get; set; }
+    public MaintenanceTransaction MaintenanceTransaction { get; set; } = new();
+    public List<BuildingBladder> Bladders { get; set; } = new List<BuildingBladder>();
+    public List<BuildingBladder> AllBladders { get; set; } = new List<BuildingBladder>();
+    public List<Finding> AvailableFindings { get; set; } = new List<Finding>();
+    public List<Finding> FindingSelects { get; set; } = new List<Finding>();
+    bool isDisabled;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Bladders = await bladderService.GetAllMaintainableAsync();
+        AvailableFindings = await context.Finding.ToListAsync();
+        if (TransactionId != 0)
+        {
+            MaintenanceTransaction = await context.Set<MaintenanceTransaction>()
+                .Include(mt => mt.MaintenanceFindings)
+                .ThenInclude(mf => mf.Finding)
+                .FirstOrDefaultAsync(mt => mt.Id == TransactionId);
+            isDisabled = true;
+            AllBladders = await bladderService.GetAllAsync();
+        }
+    }
+
+    private async Task CreateTransaction()
+    {
+        if (MaintenanceTransaction.MaintenanceFindings.Count <= 0)
+        {
+            uiNotificationService.Error(L["Please add one or more findings for the bladder "]);
+            return;
+        }
+        foreach (var item in MaintenanceTransaction.MaintenanceFindings)
+        {
+            if (item.FindingId == 0)
+            {
+                uiNotificationService.Error(L["Please select a findings from the list "]);
+                return;
+            }   
+        }
+        foreach (var item in MaintenanceTransaction.MaintenanceFindings)
+        {
+            item.Finding = null;   
+        }
+        MaintenanceTransaction.CreatedAt = DateTime.Now;
+        MaintenanceTransaction.TransactionType = TransactionTypes.صيانة.ToString();
+        await transactionService.CreateAsync(MaintenanceTransaction);
+
+        
+
+        var selectedBladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MaintenanceTransaction.BladderId);
+        if (selectedBladder != null)
+        {
+            selectedBladder.Status = BladderStatus.في_الاختبار.ToString();
+            await bladderService.UpdateAsync(selectedBladder);
+        }
+
+        navigationManager.NavigateTo("/Transactions/Index");
+    }
+
+    private void AddFinding()
+    {
+        MaintenanceTransaction.MaintenanceFindings.Add(new MaintenanceFinding() {MaintenanceTransactionId = MaintenanceTransaction.Id });
+    }
+
+    private void RemoveFindingSelect(MaintenanceFinding maintenanceFinding)
+    {
+        MaintenanceTransaction.MaintenanceFindings.Remove(maintenanceFinding);
+    }
+
+    private void ToggleDropdown( MaintenanceFinding maintenanceFinding)
+    {
+        maintenanceFinding.ShowDropdown = !maintenanceFinding.ShowDropdown;
+    }
+}

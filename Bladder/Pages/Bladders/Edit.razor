@@ -1,9 +1,4 @@
 ﻿@page "/Bladders/Edit/{id:int}"
-@using Bladder.Data;
-@using Bladder.Entities;
-@using Bladder.Constants;
-@using Bladder.Services;
-@using Volo.Abp.AspNetCore.Components.Notifications;
 @attribute [Authorize("Bladder_Create")]
 @inject IBuildingBladderService bladderService;
 @inject BladderDbContext dbContext;

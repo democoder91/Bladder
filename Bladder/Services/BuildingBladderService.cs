@@ -1,6 +1,8 @@
-﻿using Bladder.Data;
+﻿using Bladder.Constants;
+using Bladder.Data;
 using Bladder.Entities;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using Volo.Abp.Domain.Repositories;
 
 namespace Bladder.Services
@@ -50,6 +52,20 @@ namespace Bladder.Services
             }
 
             return !await query.AnyAsync();
+        }
+
+        public async Task<List<BuildingBladder>> GetAllMountableAsync()
+        {
+            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.جاهز.ToString()).ToListAsync();
+        }
+        public async Task<List<BuildingBladder>> GetAllDismountableAsync()
+        {
+            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.يعمل.ToString()).ToListAsync();
+        }
+
+        public async Task<List<BuildingBladder>> GetAllMaintainableAsync()
+        {
+            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.تحت_الصيانة.ToString()).ToListAsync();
         }
     }
 }

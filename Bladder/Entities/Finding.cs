@@ -9,5 +9,7 @@ namespace Bladder.Entities
         [Required]
         public string IconClass { get; set; }
         public string Description { get; set; }
+
+        public List<MaintenanceFinding> MaintenanceFindings { get; set; } = new List<MaintenanceFinding>();
     }
 }

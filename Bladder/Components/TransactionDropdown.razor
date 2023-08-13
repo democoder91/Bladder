@@ -1,0 +1,22 @@
+@inherits BladderComponentBase
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" @onclick="ToggleDropdown">
+        @L["Create New Transaction"]
+    </button>
+    <div class="dropdown-menu" style="display: @(showDropdown ? "block" : "none")">
+        <NavLink class="dropdown-item" href="/Transactions/CreateMountTransaction">Mount Transaction</NavLink>
+        <NavLink class="dropdown-item" href="/Transactions/CreateDismountTransaction">Dismount Transaction</NavLink>
+        <NavLink class="dropdown-item" href="/Transactions/CreateMaintenanceTransaction">Maintenance Transaction</NavLink>
+        <NavLink class="dropdown-item" href="/Transactions/CreateTestTransaction">Test Transaction</NavLink>
+        <!-- Add more NavLink items for other transaction types -->
+    </div>
+</div>
+
+@code {
+    private bool showDropdown = false;
+
+    private void ToggleDropdown()
+    {
+        showDropdown = !showDropdown;
+    }
+}

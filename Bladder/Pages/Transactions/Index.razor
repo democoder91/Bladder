@@ -1,0 +1,165 @@
+﻿@page "/Transactions/Index"
+
+
+@inherits BladderComponentBase
+@inject IBladderTransactionService transactionService;
+@inject IJSRuntime jsRuntime
+@inject IUiNotificationService uiNotificationService
+@attribute [Authorize("Transaction_Index")]
+
+
+
+<h1>@L["Bladder Transactions"]</h1>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2>@L["Filters"]</h2>
+    </div>
+    <div class="card-body">
+        <Row>
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Bladder Code"]</div>
+                    <InputText @bind-Value="@BladderCodeFilter" class="form-control" />
+                </div>
+            </Column>
+
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Created At (From)"]</div>
+                    <InputDate @bind-Value="@CreatedAtFromFilter" class="form-control" />
+                </div>
+            </Column>
+
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Created At (To)"]</div>
+                    <InputDate @bind-Value="@CreatedAtToFilter" class="form-control" />
+                </div>
+            </Column>
+
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Transaction Type"]</div>
+                    <InputSelect @bind-Value="@TransactionTypeFilter" class="form-control">
+                        <option value="">@L["All"]</option>
+                        @foreach (TransactionTypes type in Enum.GetValues(typeof(TransactionTypes)))
+                        {
+                            <option value="@type.ToString()">@L[type.ToString()]</option>
+                        }
+                    </InputSelect>
+                </div>
+            </Column>
+        </Row>
+
+        <div class="d-flex flex-row">
+            <a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a>
+            <a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <div class="d-flex flex-row justify-content-between">
+            <div>
+                <h2>@L["Bladder Transactions"]</h2>
+            </div>
+            <AuthorizeView Policy="Bladder_Create">
+                <TransactionDropdown />
+            </AuthorizeView>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@L["Bladder Code"]</th>
+                    <th>@L["Created At"]</th>
+                    <th>@L["Transaction Type"]</th>
+                    <th>@L["Action"]</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var transaction in FilteredTransactions)
+                {
+                    <tr>
+                        <td>@transaction.Bladder.BladderCode</td>
+                        <td>@transaction.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td>@L[transaction.TransactionType.ToString()]</td>
+                        <td>
+                            @if (transaction.TransactionType == TransactionTypes.تركيب.ToString())
+                            {
+                                <a href="/Transactions/CreateMountTransaction/@transaction.Id">@L["Show"]</a>
+                            }
+                            @if (transaction.TransactionType == TransactionTypes.فك.ToString())
+                            {
+                                <a href="/Transactions/CreateDismountTransaction/@transaction.Id">@L["Show"]</a>
+                            }
+                            @if (transaction.TransactionType == TransactionTypes.صيانة.ToString())
+                            {
+                                <a href="/Transactions/CreateMaintenanceTransaction/@transaction.Id">@L["Show"]</a>
+                            }
+                        </td>
+                        <!-- Add more columns as needed -->
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<BladderTransaction> Transactions { get; set; } = new();
+    private List<BladderTransaction> FilteredTransactions { get; set; } = new();
+    private string? BladderCodeFilter { get; set; } = string.Empty;
+    private DateTime? CreatedAtFromFilter { get; set; }
+    private DateTime? CreatedAtToFilter { get; set; }
+    private string? TransactionTypeFilter { get; set; } = string.Empty;
+
+    [Inject]
+    private IBladderTransactionService TransactionService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Transactions = await TransactionService.GetAllAsync();
+        FilteredTransactions = Transactions;
+    }
+
+    private void ApplyFilters()
+    {
+        var query = Transactions.AsQueryable();
+
+        if (!string.IsNullOrEmpty(BladderCodeFilter))
+        {
+            query = query.Where(t => t.Bladder.BladderCode.Contains(BladderCodeFilter));
+        }
+
+        if (CreatedAtFromFilter != null)
+        {
+            query = query.Where(t => t.CreatedAt >= CreatedAtFromFilter);
+        }
+
+        if (CreatedAtToFilter != null)
+        {
+            query = query.Where(t => t.CreatedAt <= CreatedAtToFilter);
+        }
+
+        if (!string.IsNullOrEmpty(TransactionTypeFilter))
+        {
+            query = query.Where(t => t.TransactionType == TransactionTypeFilter);
+        }
+
+        FilteredTransactions = query.ToList();
+    }
+
+    private void ClearFilters()
+    {
+        BladderCodeFilter = null;
+        CreatedAtFromFilter = null;
+        CreatedAtToFilter = null;
+        TransactionTypeFilter = null;
+        FilteredTransactions = Transactions;
+    }
+}
