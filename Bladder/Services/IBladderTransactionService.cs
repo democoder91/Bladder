@@ -1,4 +1,5 @@
 ﻿using Bladder.Entities;
+using Bladder.Entities.Transactions;
 
 namespace Bladder.Services
 {
@@ -9,5 +10,6 @@ namespace Bladder.Services
         Task<List<BladderTransaction>> GetAllAsync();
         Task<BladderTransaction> GetAsync(int id);
         Task UpdateAsync(BladderTransaction transaction);
+        Task<MountTransaction> GetLastMountTransactionAsync(int bladderId);
     }
 }

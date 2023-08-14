@@ -4,11 +4,18 @@
         @L["Create New Transaction"]
     </button>
     <div class="dropdown-menu" style="display: @(showDropdown ? "block" : "none")">
-        <NavLink class="dropdown-item" href="/Transactions/CreateMountTransaction">Mount Transaction</NavLink>
-        <NavLink class="dropdown-item" href="/Transactions/CreateDismountTransaction">Dismount Transaction</NavLink>
-        <NavLink class="dropdown-item" href="/Transactions/CreateMaintenanceTransaction">Maintenance Transaction</NavLink>
-        <NavLink class="dropdown-item" href="/Transactions/CreateTestTransaction">Test Transaction</NavLink>
-        <!-- Add more NavLink items for other transaction types -->
+        <AuthorizeView Policy="Transaction_MountCreate">
+            <NavLink class="dropdown-item" href="/Transactions/CreateMountTransaction">@L["Mount Transaction"]</NavLink>
+        </AuthorizeView>        
+        <AuthorizeView Policy="Transaction_DismountCreate">
+            <NavLink class="dropdown-item" href="/Transactions/CreateDismountTransaction">@L["Dismount Transaction"]</NavLink>
+        </AuthorizeView>        
+        <AuthorizeView Policy="Transaction_MaintenanceCreate">
+            <NavLink class="dropdown-item" href="/Transactions/CreateMaintenanceTransaction">@L["Maintenance Transaction"]</NavLink>
+        </AuthorizeView>        
+        <AuthorizeView Policy="Transaction_TestCreate">
+            <NavLink class="dropdown-item" href="/Transactions/CreateTestTransaction">@L["Test Transaction"]</NavLink>
+        </AuthorizeView>        <!-- Add more NavLink items for other transaction types -->
     </div>
 </div>
 

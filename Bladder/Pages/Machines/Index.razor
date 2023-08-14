@@ -46,6 +46,7 @@
             <thead>
                 <tr>
                     <th>@L["Machine Code"]</th>
+                    <th>@L["Status"]</th>
                     
                     <th>@L["Action"]</th>
                 </tr>
@@ -57,6 +58,7 @@
                     {
                         <tr>
                             <td>@machine.Code</td>
+                            <td>@(machine.Full? L["Working"] : L["Stopped"])</td>
                             <td>
                                 <AuthorizeView Policy="Machine_Edit">
                                     <a href="/Machines/Edit/@machine.Id" class="btn btn-link">@L["Edit"]</a>

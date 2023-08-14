@@ -1,0 +1,94 @@
+﻿@page "/Transactions/CreateTestTransaction/{TransactionId:int?}"
+@{
+    var breadcrumbItems = new List<Volo.Abp.BlazoriseUI.BreadcrumbItem>() {
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(@L["Bladder Transactions"]),
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["Create Test Transaction"]),
+
+    };
+}
+<Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader BreadcrumbItems="@breadcrumbItems">
+</Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader>
+<abp-breadcrumb>
+    <abp-breadcrumb-item href="#" title="Home" />
+    <abp-breadcrumb-item href="#" title="Library"/>
+    <abp-breadcrumb-item title="Page"/>
+</abp-breadcrumb>
+
+@inject IBuildingBladderService bladderService
+@inject IBladderTransactionService transactionService
+@inject IUiNotificationService uiNotificationService
+@inject NavigationManager navigationManager
+@inject BladderDbContext context
+
+@inherits BladderComponentBase
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3>@L["Create Test Transaction"]</h3>
+    </div>
+    <div class="card-body">
+        <EditForm Model="TestTransaction" OnValidSubmit="CreateTransaction">
+            <DataAnnotationsValidator />
+
+            <RadzenRow>
+                <RadzenColumn>
+                    <div class="form-group">
+                        <label class="form-label">@L["Bladder Code"]</label>
+                        <RadzenDropDown Disabled="isDisabled" AllowClear="false" @bind-Value=TestTransaction.BladderId AllowVirtualization="true"
+                                        AllowFiltering="true" Data=@(isDisabled ? AllBladders : Bladders) TextProperty="BladderCode" ValueProperty="Id" Style="width: 100%;" />
+                        <ValidationMessage style="color:red;" For="() =>TestTransaction.BladderId " />
+                    </div>
+                </RadzenColumn>
+            </RadzenRow>
+
+            <div class="d-flex flex-row justify-content-md-center">
+                <div class="form-group mx-1">
+                    @if (!isDisabled)
+                    {
+                        <button type="submit" class="btn btn-primary">@L["Post Transaction"]</button>
+                    }
+                </div>
+                <div class="form-group mx-1">
+                    <a href="/Transactions/Index" class="btn btn-secondary">@L["Cancel"]</a>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int TransactionId { get; set; }
+    public TestTransaction TestTransaction { get; set; } = new();
+    public List<BuildingBladder> Bladders { get; set; } = new List<BuildingBladder>();
+    public List<BuildingBladder> AllBladders { get; set; } = new List<BuildingBladder>();
+    bool isDisabled;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (TransactionId != 0)
+        {
+            TestTransaction = await context.Set<TestTransaction>().FirstOrDefaultAsync(tt => tt.Id == TransactionId);
+            isDisabled = true;
+            AllBladders = await bladderService.GetAllAsync();
+        }
+
+        Bladders = await bladderService.GetAllTestableAsync();
+    }
+
+    private async Task CreateTransaction()
+    {
+        TestTransaction.CreatedAt = DateTime.Now;
+        TestTransaction.TransactionType = TransactionTypes.اختبار.ToString();
+        await transactionService.CreateAsync(TestTransaction);
+        TestTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == TestTransaction.BladderId);
+        if (TestTransaction.Bladder is not null)
+        {
+            TestTransaction.Bladder.Status = BladderStatus.جاهز.ToString();
+            await bladderService.UpdateAsync(TestTransaction.Bladder);
+        }
+
+        
+        
+        navigationManager.NavigateTo("/Transactions/Index", true);
+    }
+}

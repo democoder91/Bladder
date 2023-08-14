@@ -1,4 +1,14 @@
 ﻿@page "/Transactions/CreateMountTransaction/{TransactionId:int?}"
+@{
+    var breadcrumbItems = new List<Volo.Abp.BlazoriseUI.BreadcrumbItem>() {
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(@L["Bladder Transactions"], "/Transactions/Index"),
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["Create Mount Transaction"]),
+
+    };
+}
+<Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader BreadcrumbItems="@breadcrumbItems">
+</Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader>
+@attribute [Authorize("Transaction_TestCreate")]
 @attribute [Authorize("Transaction_MountCreate")]
 
 @inject IBuildingBladderService bladderService
@@ -34,7 +44,7 @@
                         <label class="form-label">@L["Machine Code"]</label>
                         
                         <RadzenDropDown Disabled="isDisabled" AllowClear="true" @bind-Value=MountTransaction.MachineId AllowVirtualization="true"
-                                        AllowFiltering="true" Data=@Machines TextProperty="Code" ValueProperty="Id" Style="width: 100%;" />
+                                        AllowFiltering="true" Data=@(isDisabled?AllMachines:Machines) TextProperty="Code" ValueProperty="Id" Style="width: 100%;" />
                         <ValidationMessage style="color:red;" For="() => MountTransaction.MachineId" />
                     </div>
                 </RadzenColumn>
@@ -61,6 +71,7 @@
     public List<BuildingBladder> AllBladders { get; set; } = new List<BuildingBladder>();
     public List<BuildingBladder> Bladders { get; set; } = new List<BuildingBladder>();
     public List<BuildingMachine> Machines { get; set; } = new List<BuildingMachine>();
+    public List<BuildingMachine> AllMachines { get; set; } = new List<BuildingMachine>();
     bool isDisabled;
 
 
@@ -74,6 +85,8 @@
         Bladders = await bladderService.GetAllMountableAsync();
         AllBladders = await bladderService.GetAllAsync();
         Machines = await machineService.GetAllAsync();
+        Machines = Machines.Where(m => ! m.Full).ToList(); 
+        AllMachines = await machineService.GetAllAsync();
     }
 
     private  async Task CreateTransaction()
@@ -84,7 +97,10 @@
         navigationManager.NavigateTo("/Transactions/Index");
         MountTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MountTransaction.BladderId);
         MountTransaction.Bladder.Status = BladderStatus.يعمل.ToString();
+        MountTransaction.Machine = await context.Machines.FirstOrDefaultAsync(b => b.Id == MountTransaction.MachineId);
+        MountTransaction.Machine.Full = true;
 
+        machineService.UpdateAsync(MountTransaction.Machine);
         bladderService.UpdateAsync(MountTransaction.Bladder);
 
         

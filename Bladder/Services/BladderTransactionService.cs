@@ -1,7 +1,9 @@
 ﻿using Bladder.Constants;
 using Bladder.Data;
 using Bladder.Entities;
+using Bladder.Entities.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using Volo.Abp.Domain.Repositories;
 
 namespace Bladder.Services
@@ -41,7 +43,13 @@ namespace Bladder.Services
         {
             await repository.DeleteAsync(m => m.Id == id);
         }
-        
 
+        public async Task<MountTransaction> GetLastMountTransactionAsync(int bladderId)
+        {
+            return await context.Set<MountTransaction>()
+                .Where(mt => mt.BladderId == bladderId)
+                .OrderByDescending(mt => mt.CreatedAt)
+                .FirstOrDefaultAsync();
+        }
     }
 }

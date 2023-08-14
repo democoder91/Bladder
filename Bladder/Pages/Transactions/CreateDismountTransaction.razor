@@ -1,4 +1,13 @@
 ﻿@page "/Transactions/CreateDismountTransaction/{TransactionId:int?}"
+@{
+    var breadcrumbItems = new List<Volo.Abp.BlazoriseUI.BreadcrumbItem>() {
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(@L["Bladder Transactions"], "/Transactions/Index"),
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["Create Dismount Transaction"]),
+
+    };
+}
+<Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader BreadcrumbItems="@breadcrumbItems">
+</Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader>
 @attribute [Authorize("Transaction_DismountCreate")]
 
 @inject IBuildingBladderService bladderService
@@ -73,6 +82,21 @@
         DismountTransaction.Bladder.Status = BladderStatus.تحت_الصيانة.ToString();
 
         bladderService.UpdateAsync(DismountTransaction.Bladder);
+
+        var lastMountTransaction = await transactionService.GetLastMountTransactionAsync(DismountTransaction.BladderId);
+
+        if (lastMountTransaction != null)
+        {
+            // Find the corresponding building machine and update its Full property
+            var buildingMachine = await context.Machines.FirstOrDefaultAsync(bm => bm.Id == lastMountTransaction.MachineId);
+            if (buildingMachine != null)
+            {
+                buildingMachine.Full = false;
+                await context.SaveChangesAsync();
+            }
+        }
+
+        
         navigationManager.NavigateTo("/Transactions/Index");
     }
 }

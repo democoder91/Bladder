@@ -1,4 +1,13 @@
 ﻿@page "/Transactions/CreateMaintenanceTransaction/{TransactionId:int?}"
+@{
+    var breadcrumbItems = new List<Volo.Abp.BlazoriseUI.BreadcrumbItem>() {
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(@L["Bladder Transactions"], "/Transactions/Index"),
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["Create Maintenance Transaction"]),
+
+    };
+}
+<Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader BreadcrumbItems="@breadcrumbItems">
+</Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader>
 @attribute [Authorize("Transaction_MaintenanceCreate")]
 
 @inject IBuildingBladderService bladderService

@@ -7,8 +7,11 @@
     "Menu:Machines": "ماكينات البناء",
     "Menu:Bladders": "بلادرات البناء",
     "Menu:Findings": "الاكتشافات",
+    "Menu:BladderTransactions": "عمليات البلادرات",
     "Master Data": "البيانات الاساسية",
     "this field is required": "هذا الحقل مطلوب",
+    "Working": "تعمل",
+    "Stopped": "متوقفة",
 
     // machines
     "Machines": "ماكينات البناء",
@@ -51,7 +54,33 @@
     "Font Awesome Icon Class": " أيقونة Font Awesome",
     "Description": "الوصف",
     "dont Know where to get the icons ? ": "لا تعرف اين تجد الايقونات ؟ ",
-    "click here": "اضغط هنا"
+    "click here": "اضغط هنا",
+
+    "Bladder Transactions": "عمليات البلادرات",
+    "Created At (From)": "تم الإنشاء في (من)",
+    "Created At (To)": "تم الإنشاء في (إلى)",
+    "Transaction Type": "نوع العملية",
+    "All": "الكل",
+    "Bladder Create": "إنشاء بلادر",
+    "Created At": "تم الإنشاء في",
+    "Show": "عرض",
+
+    "Displaying page {0} of {1} (total {2} transactions)": "عرض الصفحة {0} من {1} (إجمالي {2} عملية)",
+    "Create New Transaction": "انشاء عملية جديدة",
+    "Mount Transaction": "عملية تركيب",
+    "Dismount Transaction": "عملية فك",
+    "Maintenance Transaction": "عملية صيانة",
+    "Test Transaction": "عملية اختبار",
+    "Mount": "تركيب",
+    "Dismount": "فك",
+    "Maintenance": "صيانة",
+    "Test": "اختبار",
+    "Create Transaction": "انشاء العملية",
+    "Create Mount Transaction": "انشاء عملية تركيب",
+    "Create Dismount Transaction": "انشاء عملية فك",
+    "Create Maintenance Transaction": "انشاء عملية صيانة",
+    "Create Test Transaction": "انشاء عملية اختبار",
+
 
   }
 }

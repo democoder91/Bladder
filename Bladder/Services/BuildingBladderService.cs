@@ -67,5 +67,10 @@ namespace Bladder.Services
         {
             return await dbContext.Bladders.Where(b => b.Status == BladderStatus.تحت_الصيانة.ToString()).ToListAsync();
         }
+
+        public async Task<List<BuildingBladder>> GetAllTestableAsync()
+        {
+            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.في_الاختبار.ToString()).ToListAsync();
+        }
     }
 }

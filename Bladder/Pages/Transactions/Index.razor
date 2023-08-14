@@ -1,4 +1,12 @@
 ﻿@page "/Transactions/Index"
+@{
+    var breadcrumbItems = new List<Volo.Abp.BlazoriseUI.BreadcrumbItem>() {
+        new Volo.Abp.BlazoriseUI.BreadcrumbItem(@L["Bladder Transactions"]),
+
+    };
+}
+<Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader BreadcrumbItems="@breadcrumbItems">
+</Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader>
 
 
 @inherits BladderComponentBase
@@ -53,8 +61,8 @@
         </Row>
 
         <div class="d-flex flex-row">
-            <a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a>
-            <a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a>
+            <div class="form-group mx-1"><a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a></div>
+            <div class="form-group mx-1"><a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a></div>
         </div>
     </div>
 </div>
@@ -71,60 +79,85 @@
         </div>
     </div>
     <div class="card-body">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>@L["Bladder Code"]</th>
-                    <th>@L["Created At"]</th>
-                    <th>@L["Transaction Type"]</th>
-                    <th>@L["Action"]</th>
-                    <!-- Add more columns as needed -->
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var transaction in FilteredTransactions)
-                {
-                    <tr>
-                        <td>@transaction.Bladder.BladderCode</td>
-                        <td>@transaction.CreatedAt.ToString("dd/MM/yyyy")</td>
-                        <td>@L[transaction.TransactionType.ToString()]</td>
-                        <td>
-                            @if (transaction.TransactionType == TransactionTypes.تركيب.ToString())
-                            {
-                                <a href="/Transactions/CreateMountTransaction/@transaction.Id">@L["Show"]</a>
-                            }
-                            @if (transaction.TransactionType == TransactionTypes.فك.ToString())
-                            {
-                                <a href="/Transactions/CreateDismountTransaction/@transaction.Id">@L["Show"]</a>
-                            }
-                            @if (transaction.TransactionType == TransactionTypes.صيانة.ToString())
-                            {
-                                <a href="/Transactions/CreateMaintenanceTransaction/@transaction.Id">@L["Show"]</a>
-                            }
-                        </td>
-                        <!-- Add more columns as needed -->
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <RadzenDataGrid @bind-Value=@selectedItems Data="@FilteredTransactions" TItem="BladderTransaction" ColumnWidth="200px"
+                        AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterMode="FilterMode.Advanced"
+                        AllowPaging="true" PageSize="@pageSize" AllowSorting="true">
+            <Columns>
+                <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Bladder Code"]" Property="Bladder.BladderCode" />
+                <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Created At"]" Filterable="false" Reorderable="false" Sortable="false">
+                    <Template>
+                        @context.CreatedAt.ToString("dd/MM/yyyy")
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Transaction Type"]"  >
+                <Template>
+                        @if (context.TransactionType == TransactionTypes.تركيب.ToString())
+                        {
+                            @L["Mount"]
+                        }
+                        @if (context.TransactionType == TransactionTypes.فك.ToString())
+                        {
+                            @L["Dismount"]
+                        }
+                        @if (context.TransactionType == TransactionTypes.صيانة.ToString())
+                        {
+                            @L["Maintenance"]
+                        }
+                        @if (context.TransactionType == TransactionTypes.اختبار.ToString())
+                        {
+                            @L["Test"]
+                        }
+                    </Template>
+                    </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Action"]" Filterable="false" Reorderable="false" Sortable="false">
+                    <Template>
+                        @if (context.TransactionType == TransactionTypes.تركيب.ToString())
+                        {
+                            <a href="/Transactions/CreateMountTransaction/@context.Id">@L["Show"]</a>
+                        }
+                        @if (context.TransactionType == TransactionTypes.فك.ToString())
+                        {
+                            <a href="/Transactions/CreateDismountTransaction/@context.Id">@L["Show"]</a>
+                        }
+                        @if (context.TransactionType == TransactionTypes.صيانة.ToString())
+                        {
+                            <a href="/Transactions/CreateMaintenanceTransaction/@context.Id">@L["Show"]</a>
+                        }
+                        @if (context.TransactionType == TransactionTypes.اختبار.ToString())
+                        {
+                            <a href="/Transactions/CreateTestTransaction/@context.Id">@L["Show"]</a>
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+        <RadzenPager ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" HorizontalAlign="HorizontalAlign.Right"
+                     Count="count" PageSize="@pageSize" PageNumbersCount="5" PageChanged="@PageChanged" />
     </div>
 </div>
 
 @code {
-    private List<BladderTransaction> Transactions { get; set; } = new();
+    private List<BladderTransaction> Transactions { get; set; } = new() { new BladderTransaction()};
     private List<BladderTransaction> FilteredTransactions { get; set; } = new();
     private string? BladderCodeFilter { get; set; } = string.Empty;
     private DateTime? CreatedAtFromFilter { get; set; }
     private DateTime? CreatedAtToFilter { get; set; }
     private string? TransactionTypeFilter { get; set; } = string.Empty;
+    string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} transactions)";
+    int pageSize = 10;
+    int count;
+    IList<BladderTransaction> selectedItems = new List<BladderTransaction>();
 
     [Inject]
     private IBladderTransactionService TransactionService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        pagingSummaryFormat = L["Displaying page {0} of {1} (total {2} transactions)"];
         Transactions = await TransactionService.GetAllAsync();
+        Transactions = Transactions.OrderByDescending(t => t.CreatedAt).ToList();
         FilteredTransactions = Transactions;
+        UpdateFilteredTransactions(0);
     }
 
     private void ApplyFilters()
@@ -161,5 +194,23 @@
         CreatedAtToFilter = null;
         TransactionTypeFilter = null;
         FilteredTransactions = Transactions;
+        UpdateFilteredTransactions(0);
+    }
+
+    void PageChanged(PagerEventArgs args)
+    {
+        UpdateFilteredTransactions(args.Skip);
+    }
+
+    void UpdateFilteredTransactions(int skip)
+    {
+        count = Transactions.Count();
+        FilteredTransactions = GetTransactions(skip, pageSize);
+        StateHasChanged();
+    }
+
+    List<BladderTransaction> GetTransactions(int skip, int take)
+    {
+        return Transactions.Skip(skip).Take(take).ToList();
     }
 }
