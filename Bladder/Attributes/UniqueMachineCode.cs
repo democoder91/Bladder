@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Bladder.Data; // Import the appropriate namespace for your DbContext
 using Bladder.Entities;
-using Bladder.Entities;
 
 namespace Bladder.Attributes
 {
@@ -12,7 +11,7 @@ namespace Bladder.Attributes
         AllowMultiple = false)]
     public class UniqueMachineCodeAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             if (value is string machineCode && validationContext.ObjectInstance is BuildingMachine machine)
             {

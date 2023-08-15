@@ -69,15 +69,15 @@ public class BladderMenuContributor : IMenuContributor
 
 
 
+        administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
 
-        if (BladderModule.IsMultiTenant)
-        {
-            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
-        }
-        else
-        {
-            administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
-        }
+        //if (BladderModule.IsMultiTenant)
+        //{
+        //    administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
+        //}
+        //else
+        //{
+        //}
 
         return Task.CompletedTask;
     }

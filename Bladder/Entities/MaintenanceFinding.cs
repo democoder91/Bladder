@@ -9,6 +9,7 @@ namespace Bladder.Entities
 
         public int MaintenanceTransactionId { get; set; }
         public MaintenanceTransaction MaintenanceTransaction { get; set; }
+        [Required]
 
         [Range(1, int.MaxValue, ErrorMessage = "Finding Id Is Required")]
         public int FindingId { get; set; }

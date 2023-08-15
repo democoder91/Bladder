@@ -6,7 +6,7 @@ public class TodayOrFutureDateAttribute : ValidationAttribute
 {
     public TodayOrFutureDateAttribute() : base() { }
 
-    public override bool IsValid(object value)
+    public override bool IsValid(object? value)
     {
         if (value == null || !(value is DateTime))
         {

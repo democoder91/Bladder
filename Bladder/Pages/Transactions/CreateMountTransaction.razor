@@ -93,15 +93,15 @@
     {
         MountTransaction.CreatedAt = DateTime.Now;
         MountTransaction.TransactionType = TransactionTypes.تركيب.ToString();
-        transactionService.CreateAsync(MountTransaction);
+        await transactionService.CreateAsync(MountTransaction);
         navigationManager.NavigateTo("/Transactions/Index");
         MountTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MountTransaction.BladderId);
         MountTransaction.Bladder.Status = BladderStatus.يعمل.ToString();
         MountTransaction.Machine = await context.Machines.FirstOrDefaultAsync(b => b.Id == MountTransaction.MachineId);
         MountTransaction.Machine.Full = true;
 
-        machineService.UpdateAsync(MountTransaction.Machine);
-        bladderService.UpdateAsync(MountTransaction.Bladder);
+        await machineService.UpdateAsync(MountTransaction.Machine);
+        await bladderService.UpdateAsync(MountTransaction.Bladder);
 
         
 

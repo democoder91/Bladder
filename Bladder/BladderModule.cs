@@ -327,10 +327,10 @@ public class BladderModule : AbpModule
         app.UseAuthentication();
         app.UseAbpOpenIddictValidation();
 
-        if (IsMultiTenant)
-        {
-            app.UseMultiTenancy();
-        }
+        //if (IsMultiTenant)
+        //{
+        //    app.UseMultiTenancy();
+        //}
 
         app.UseUnitOfWork();
         app.UseAuthorization();

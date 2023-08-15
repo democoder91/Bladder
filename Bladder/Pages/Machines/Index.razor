@@ -5,6 +5,7 @@
 @inject IJSRuntime jsRuntime
 @inject IUiNotificationService uiNotificationService
 @attribute [Authorize("Machine_Index")]
+
 <h1>@L["Machines"]</h1>
 
 <div class="card shadow-sm">
@@ -21,16 +22,16 @@
             </Column>
         </Row>
 
-        <div class="d-fex flex-row">
-            <a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a>
-            <a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a>
+        <div class="d-flex flex-row">
+            <a @onclick="ApplyFilters" class="btn btn-primary mx-1">@L["Filter"]</a>
+            <a @onclick="ClearFilters" class="btn btn-secondary mx-1">@L["Reset"]</a>
         </div>
     </div>
 </div>
 
 <div class="card shadow-sm">
     <div class="card-header">
-        <div class="d-flex flex-row justify-content-between  ">
+        <div class="d-flex flex-row justify-content-between">
             <div>
                 <h2>@L["Building Machines"]</h2>
             </div>
@@ -42,84 +43,56 @@
         </div>
     </div>
     <div class="card-body">
-        <table class="table ">
-            <thead>
-                <tr>
-                    <th>@L["Machine Code"]</th>
-                    <th>@L["Status"]</th>
-                    
-                    <th>@L["Action"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Machines.Count() > 0)
-                {
-                    @foreach (var machine in Machines)
-                    {
-                        <tr>
-                            <td>@machine.Code</td>
-                            <td>@(machine.Full? L["Working"] : L["Stopped"])</td>
-                            <td>
-                                <AuthorizeView Policy="Machine_Edit">
-                                    <a href="/Machines/Edit/@machine.Id" class="btn btn-link">@L["Edit"]</a>
-                                </AuthorizeView>
-                                <AuthorizeView Policy="Machine_Delete">
-                                    <a @onclick="()=> ConfirmDelete(machine.Id)" class="btn btn-link">@L["Delete"]</a>
-                                </AuthorizeView>
-                            </td>
-                        </tr>
-                    }
-
-                }
-                else
-                {
-                    <span>@L["No Machines Available"]</span>
-                }
-            </tbody>
-        </table>
+        <RadzenDataGrid @bind-Data=@Machines
+                        AllowPaging="true" PageSize="10" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
+            <Columns>
+                <RadzenDataGridColumn TItem="BuildingMachine" Property="Code" Title="@L["Machine Code"]" />
+                <RadzenDataGridColumn TItem="BuildingMachine" Property="Full" Title="@L["Status"]">
+                    <Template Context="machine">
+                        @(machine.Full ? L["Working"] : L["Stopped"])
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="BuildingMachine" >
+                    <Template Context="machine">
+                        <AuthorizeView Policy="Machine_Edit">
+                            <a href="/Machines/Edit/@machine.Id" class="btn btn-link">@L["Edit"]</a>
+                        </AuthorizeView>
+                        <AuthorizeView Policy="Machine_Delete">
+                            <a @onclick="()=> ConfirmDelete(machine.Id)" class="btn btn-link">@L["Delete"]</a>
+                        </AuthorizeView>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
     </div>
 </div>
-
-
-
-
-
 
 @code {
     public List<BuildingMachine> Machines { get; set; } = new();
     public string? MachineCodeFilter { get; set; } = string.Empty;
 
-
-
-
     protected override async Task OnInitializedAsync()
     {
         Machines = await machineService.GetAllAsync();
     }
+
     public async Task ApplyFilters()
     {
-
         Machines = await machineService.GetAllAsync();
         var query = Machines.AsQueryable();
-        if (MachineCodeFilter != string.Empty)
+        if (!string.IsNullOrEmpty(MachineCodeFilter))
         {
             query = query.Where(b => b.Code.Contains(MachineCodeFilter));
         }
-        
 
         Machines = query.ToList();
-
-
-        StateHasChanged();
     }
+
     public async void ClearFilters()
     {
         Machines = await machineService.GetAllAsync();
         MachineCodeFilter = null;
-        StateHasChanged();
-
     }
-
 
     private async Task ConfirmDelete(int id)
     {
@@ -127,21 +100,19 @@
         if (result)
         {
             // User confirmed the deletion, proceed with deletion logic
-            await DeleteBladder(id);
+            await DeleteMachine(id);
         }
     }
 
-    private async Task DeleteBladder(int id)
+    private async Task DeleteMachine(int id)
     {
-        // Call the service to delete the bladder
+        // Call the service to delete the machine
         await machineService.DeleteAsync(id);
 
-        // Refresh the bladder list
+        // Refresh the machine list
         Machines = await machineService.GetAllAsync();
 
-        // Hide the edit modal
+        // Show success notification
         await uiNotificationService.Success(@L["Machine Deleted Successfully"]);
     }
-
-
 }

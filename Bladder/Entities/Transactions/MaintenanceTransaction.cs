@@ -21,7 +21,7 @@ namespace Bladder.Entities.Transactions
             _minimumElements = minimumElements;
         }
 
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             var list = value as IList<MaintenanceFinding>;
             return list != null && list.Count >= 0;
@@ -30,7 +30,7 @@ namespace Bladder.Entities.Transactions
 
     public class EnsureUniqueFindingIdsAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             var findings = value as List<MaintenanceFinding>;
             if (findings == null)

@@ -10,7 +10,7 @@ namespace Bladder.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class UniqueBladderCodeAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             if (value is string bladderCode && validationContext.ObjectInstance is BuildingBladder bladder)
             {

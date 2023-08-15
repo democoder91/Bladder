@@ -21,7 +21,7 @@
             </Column>
         </Row>
 
-        <div class="d-fex flex-row">
+        <div class="d-flex flex-row">
             <a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a>
             <a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a>
         </div>
@@ -30,7 +30,7 @@
 
 <div class="card shadow-sm">
     <div class="card-header">
-        <div class="d-flex flex-row justify-content-between  ">
+        <div class="d-flex flex-row justify-content-between">
             <div>
                 <h2>@L["Findings"]</h2>
             </div>
@@ -42,86 +42,59 @@
         </div>
     </div>
     <div class="card-body">
-        <table class="table ">
-            <thead>
-                <tr>
-                    <th>@L["Finding Icon"]</th>
-                    <th>@L["Finding Description"]</th>
-                    
-                    <th>@L["Action"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Findings.Count() > 0)
-                {
-                    @foreach (var finding in Findings)
-                    {
-                        <tr>
-                            <td>
-                                <div class="@finding.IconClass"></div>
-                            </td>
-                            <td>@finding.Description</td>
-                            <td>
-                                <AuthorizeView Policy="Finding_Edit">
-                                    <a href="/Findings/Edit/@finding.Id" class="btn btn-link">@L["Edit"]</a>
-                                </AuthorizeView>
-                                <AuthorizeView Policy="Finding_Delete">
-                                    <a @onclick="()=> ConfirmDelete(finding.Id)" class="btn btn-link">@L["Delete"]</a>
-                                </AuthorizeView>
-                            </td>
-                        </tr>
-                    }
-
-                }
-                else
-                {
-                    <span>@L["No Findings Available"]</span>
-                }
-            </tbody>
-        </table>
+        <RadzenDataGrid @bind-Data=@Findings
+                        AllowPaging="true" PageSize="10" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
+            <Columns>
+                <RadzenDataGridColumn TItem="Finding" Property="IconClass" Title="@L["Finding Icon"]">
+                    <Template Context="finding">
+                        <div class="@finding.IconClass"></div>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Finding" Property="Description" Title="@L["Finding Description"]" />
+                <RadzenDataGridColumn TItem="Finding">
+                    <Template Context="finding">
+                        <div style="text-align: center;">
+                            <AuthorizeView Policy="Finding_Edit">
+                                <a href="/Findings/Edit/@finding.Id" class="btn btn-link">@L["Edit"]</a>
+                            </AuthorizeView>
+                            <AuthorizeView Policy="Finding_Delete">
+                                <a @onclick="()=> ConfirmDelete(finding.Id)" class="btn btn-link">@L["Delete"]</a>
+                            </AuthorizeView>
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
     </div>
 </div>
-
-
-
-
-
 
 @code {
     public List<Finding> Findings { get; set; } = new();
     public string? FindingDescriptionFilter { get; set; } = string.Empty;
 
-
-
-
     protected override async Task OnInitializedAsync()
     {
         Findings = await findingService.GetAllAsync();
     }
+
     public async Task ApplyFilters()
     {
-
         Findings = await findingService.GetAllAsync();
         var query = Findings.AsQueryable();
-        if (string.IsNullOrEmpty(FindingDescriptionFilter))
+
+        if (!string.IsNullOrEmpty(FindingDescriptionFilter))
         {
-            query = query.Where(b => b.Description.Contains(FindingDescriptionFilter));
+            query = query.Where(f => f.Description.Contains(FindingDescriptionFilter));
         }
-        
 
         Findings = query.ToList();
-
-
-        StateHasChanged();
     }
+
     public async void ClearFilters()
     {
         Findings = await findingService.GetAllAsync();
         FindingDescriptionFilter = null;
-        StateHasChanged();
-
     }
-
 
     private async Task ConfirmDelete(int id)
     {
@@ -129,21 +102,19 @@
         if (result)
         {
             // User confirmed the deletion, proceed with deletion logic
-            await DeleteBladder(id);
+            await DeleteFinding(id);
         }
     }
 
-    private async Task DeleteBladder(int id)
+    private async Task DeleteFinding(int id)
     {
-        // Call the service to delete the bladder
+        // Call the service to delete the finding
         await findingService.DeleteAsync(id);
 
-        // Refresh the bladder list
+        // Refresh the finding list
         Findings = await findingService.GetAllAsync();
 
-        // Hide the edit modal
+        // Show a success notification
         await uiNotificationService.Success(@L["Finding Deleted Successfully"]);
     }
-
-
 }

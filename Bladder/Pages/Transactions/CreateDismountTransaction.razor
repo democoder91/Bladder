@@ -77,11 +77,11 @@
     {
         DismountTransaction.CreatedAt = DateTime.Now;
         DismountTransaction.TransactionType = TransactionTypes.فك.ToString();
-        transactionService.CreateAsync(DismountTransaction);
+        await transactionService.CreateAsync(DismountTransaction);
         DismountTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == DismountTransaction.BladderId);
         DismountTransaction.Bladder.Status = BladderStatus.تحت_الصيانة.ToString();
 
-        bladderService.UpdateAsync(DismountTransaction.Bladder);
+        await bladderService.UpdateAsync(DismountTransaction.Bladder);
 
         var lastMountTransaction = await transactionService.GetLastMountTransactionAsync(DismountTransaction.BladderId);
 

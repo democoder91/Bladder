@@ -5,6 +5,7 @@
 @inject IJSRuntime jsRuntime
 @inject IUiNotificationService uiNotificationService
 @attribute [Authorize("Bladder_Index")]
+
 <h1>@L["Bladders"]</h1>
 
 <div class="card shadow-sm">
@@ -41,23 +42,23 @@
                         <option value="">Select Status</option>
                         @foreach (var status in Enum.GetValues(typeof(BladderStatus)))
                         {
-                        <option value="@status.ToString()">@status.ToString()</option>
+                            <option value="@status.ToString()">@status.ToString()</option>
                         }
                     </InputSelect>
                 </div>
             </Column>
         </Row>
 
-        <div class="d-fex flex-row">
-            <a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a>
-            <a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a>
+        <div class="d-flex flex-row">
+                <a @onclick="ApplyFilters" class="btn btn-primary mx-1">@L["Filter"]</a>
+                <a @onclick="ClearFilters" class="btn btn-secondary mx-1">@L["Reset"]</a>
         </div>
     </div>
 </div>
 
 <div class="card shadow-sm">
     <div class="card-header">
-        <div class="d-flex flex-row justify-content-between  ">
+        <div class="d-flex flex-row justify-content-between">
             <div>
                 <h2>@L["Building Bladders"]</h2>
             </div>
@@ -69,49 +70,30 @@
         </div>
     </div>
     <div class="card-body">
-        <table class="table ">
-            <thead>
-                <tr>
-                    <th>@L["Bladder Code"]</th>
-                    <th>@L["Expiry Date"]</th>
-                    <th>@L["Status"]</th>
-                    <th>@L["Action"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Bladders.Count() > 0)
-                {
-                    @foreach (var bladder in Bladders)
-                    {
-                        <tr>
-                            <td>@bladder.BladderCode</td>
-                            <td>@bladder.ExpiryDate.ToString("dd/MM/yyyy")</td>
-                            <td>@bladder.Status</td>
-                            <td>
-                                <AuthorizeView Policy="Bladder_Edit">
-                                    <a href="/Bladders/Edit/@bladder.Id" class="btn btn-link">@L["Edit"]</a>
-                                </AuthorizeView>
-                                <AuthorizeView Policy="Bladder_Delete">
-                                    <a @onclick="()=> ConfirmDelete(bladder.Id)" class="btn btn-link">@L["Delete"]</a>
-                                </AuthorizeView>
-                            </td>
-                        </tr>
-                    }
-
-                }
-                else
-                {
-                    <span>@L["No Bladders Available"]</span>
-                }
-            </tbody>
-        </table>
+        <RadzenDataGrid @bind-Data=@Bladders 
+        AllowPaging="true" PageSize="10" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
+            <Columns>
+                <RadzenDataGridColumn TItem="BuildingBladder" Property="BladderCode" Title="@L["Bladder Code"]" />
+                <RadzenDataGridColumn TItem="BuildingBladder" Property="ExpiryDate" Title="@L["Expiry Date"]"  >
+                    <Template Context="bladder">
+                        @(((DateTime)bladder.ExpiryDate).ToString("dd/MM/yyyy"))
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="BuildingBladder" Property="Status" Title="@L["Status"]" />
+                <RadzenDataGridColumn TItem="BuildingBladder" Title="@L["Action"]">
+                    <Template Context="bladder">
+                        <AuthorizeView Policy="Bladder_Edit">
+                            <a href="/Bladders/Edit/@bladder.Id" class="btn btn-link">@L["Edit"]</a>
+                        </AuthorizeView>
+                        <AuthorizeView Policy="Bladder_Delete">
+                            <a @onclick="()=> ConfirmDelete(bladder.Id)" class="btn btn-link">@L["Delete"]</a>
+                        </AuthorizeView>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
     </div>
 </div>
-
-
-
-
-
 
 @code {
     public List<BuildingBladder> Bladders { get; set; } = new();
@@ -120,21 +102,17 @@
     public DateTime? ExpiryDateToFilter { get; set; }
     public string? StatusFilter { get; set; } = string.Empty;
 
-
-
-    private BuildingBladder selectedBladder = new(); // Track the selected bladder for editing
-    private string editBladderCode = string.Empty;
-
     protected override async Task OnInitializedAsync()
     {
         Bladders = await bladderService.GetAllAsync();
     }
+
     public async Task ApplyFilters()
     {
-
         Bladders = await bladderService.GetAllAsync();
         var query = Bladders.AsQueryable();
-        if (BladderCodeFilter != string.Empty)
+
+        if (!string.IsNullOrEmpty(BladderCodeFilter))
         {
             query = query.Where(b => b.BladderCode.Contains(BladderCodeFilter));
         }
@@ -146,16 +124,14 @@
         {
             query = query.Where(b => b.ExpiryDate <= ExpiryDateToFilter);
         }
-        if (!StatusFilter.IsNullOrEmpty() )
+        if (!StatusFilter.IsNullOrEmpty())
         {
             query = query.Where(b => b.Status == StatusFilter);
         }
 
         Bladders = query.ToList();
-
-
-        StateHasChanged();
     }
+
     public async void ClearFilters()
     {
         Bladders = await bladderService.GetAllAsync();
@@ -163,10 +139,7 @@
         ExpiryDateFromFilter = null;
         ExpiryDateToFilter = null;
         StatusFilter = null;
-        StateHasChanged();
-
     }
-
 
     private async Task ConfirmDelete(int id)
     {
@@ -186,9 +159,7 @@
         // Refresh the bladder list
         Bladders = await bladderService.GetAllAsync();
 
-        // Hide the edit modal
+        // Show success notification
         await uiNotificationService.Success(@L["Bladder Deleted Successfully"]);
     }
-
-
 }

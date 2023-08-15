@@ -2,9 +2,12 @@
 using Bladder.Data;
 using Bladder.Entities;
 using Bladder.Entities.Transactions;
+using Castle.Core.Smtp;
 using Microsoft.EntityFrameworkCore;
 using Polly;
+using System.Transactions;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Emailing;
 
 namespace Bladder.Services
 {
@@ -12,11 +15,13 @@ namespace Bladder.Services
     {
         private readonly BladderDbContext context;
         private readonly IRepository<BladderTransaction> repository;
+        private readonly IEmailService emailSender;
 
-        public BladderTransactionService(BladderDbContext context, IRepository<BladderTransaction> repository)
+        public BladderTransactionService(BladderDbContext context, IRepository<BladderTransaction> repository, IEmailService emailSender)
         {
             this.context = context;
             this.repository = repository;
+            this.emailSender = emailSender;
         }
 
         public async Task<BladderTransaction> GetAsync(int id)
@@ -31,7 +36,10 @@ namespace Bladder.Services
 
         public async Task CreateAsync(BladderTransaction transaction)
         {
-             await repository.InsertAsync(transaction);            
+            await repository.InsertAsync(transaction);
+            await emailSender.SendEmailAsync( "demo.composer2@gmail.com" , $"{transaction.TransactionType} created!", $"<h1>{transaction.TransactionType} created!</h1>");
+
+            
         }
 
         public async Task UpdateAsync(BladderTransaction transaction)
@@ -51,5 +59,7 @@ namespace Bladder.Services
                 .OrderByDescending(mt => mt.CreatedAt)
                 .FirstOrDefaultAsync();
         }
+
+        
     }
 }
