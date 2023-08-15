@@ -1,5 +1,6 @@
 ﻿using Bladder.Attributes;
 using Bladder.Localization;
+using Blazorise;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -9,21 +10,44 @@ using Volo.Abp.Validation.Localization;
 namespace Bladder.Entities
 {
 
-    public class BuildingBladder  : AggregateRoot<int>
+    public class BuildingBladder  : AggregateRoot<int>, IValidatableObject
     {
 
 
-        [Required(ErrorMessage ="this field is required")]
         [DisplayName("Bladder Code")]
         public string BladderCode { get; set; }
         [Required]
 
-        [TodayOrFutureDate(ErrorMessage ="Expiry Date Should Be Today Or Later")]
         public DateTime ExpiryDate { get; set; }
-        [Required]
         public string Status { get; set; }
         public int? MachineId { get; set; }
         public BuildingMachine? Machine { get; set; }
 
+        public IEnumerable<ValidationResult> Validate(
+            ValidationContext validationContext)
+        {
+            var localizer = validationContext.GetRequiredService<IStringLocalizer<BladderResource>>();
+            if (BladderCode == null)
+            {
+                yield return new ValidationResult(
+                    localizer["this field is required"],
+                    new[] { "BladderCode" }
+                );
+            }
+            if (Status ==null)
+            {
+                yield return new ValidationResult(
+                    localizer["this field is required"],
+                    new[] { "Status" }
+                );
+            }
+            if (ExpiryDate.Date < DateTime.Now.Date)
+            {
+                yield return new ValidationResult(
+                    localizer["the date has to be today or after"],
+                    new[] { "ExpiryDate" }
+                );
+            }
+        }
     }
 }

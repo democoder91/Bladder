@@ -37,7 +37,7 @@
                     <div class="form-group">
                         <label class="form-label">@L["Status"]</label>
                         <InputSelect @bind-Value="@Bladder.Status" class="form-control">
-                            <option value="">Select Status</option>
+                            <option value="">@L["Select Status"]</option>
                             @foreach (var status in Enum.GetValues(typeof(BladderStatus)))
                             {
                                 <option value="@status.ToString()">@status.ToString()</option>

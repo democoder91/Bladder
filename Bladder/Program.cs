@@ -1,5 +1,7 @@
 using Bladder.Data;
+using Bladder.Localization;
 using Bladder.Services;
+using Microsoft.Extensions.Localization;
 using Serilog;
 using Serilog.Events;
 using Volo.Abp.Data;
@@ -35,6 +37,7 @@ public class Program
         {
             var builder = WebApplication.CreateBuilder(args);
             
+            builder.Services.AddScoped<ILocalizationServiceCustom, LocalizationServiceCustom>();
             builder.Services.AddScoped<IBuildingMachineService, BuildingMachineService>();
             builder.Services.AddScoped<IBuildingBladderService, BuildingBladderService>();
             builder.Services.AddScoped<IFindingService, FindingService>();

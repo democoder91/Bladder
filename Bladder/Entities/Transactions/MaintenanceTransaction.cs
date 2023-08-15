@@ -1,44 +1,43 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Bladder.Localization;
+using Microsoft.Extensions.Localization;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection.PortableExecutable;
+using Bladder.Constants;
+using Blazorise;
+using Bladder.Services;
 
 namespace Bladder.Entities.Transactions
 {
-    public class MaintenanceTransaction : BladderTransaction
+    public class MaintenanceTransaction : DismountTransaction, IValidatableObject
     {
-        [Required]
-        [EnsureMinimumElements(1, ErrorMessage = "At least one maintenance finding is required.")]
-        [EnsureUniqueFindingIds(ErrorMessage = "Duplicate Findings.")]
+        [ValidateComplexType]
         public List<MaintenanceFinding> MaintenanceFindings { get; set; } = new List<MaintenanceFinding>();
 
         // Additional properties specific to Maintenance transaction
-    }
-
-    public class EnsureMinimumElementsAttribute : ValidationAttribute
-    {
-        private readonly int _minimumElements;
-
-        public EnsureMinimumElementsAttribute(int minimumElements)
+        public IEnumerable<ValidationResult> Validate(
+    ValidationContext validationContext)
         {
-            _minimumElements = minimumElements;
-        }
+            var localizer = validationContext.GetRequiredService<ILocalizationServiceCustom>();
 
-        public override bool IsValid(object? value)
-        {
-            var list = value as IList<MaintenanceFinding>;
-            return list != null && list.Count >= 0;
-        }
-    }
-
-    public class EnsureUniqueFindingIdsAttribute : ValidationAttribute
-    {
-        public override bool IsValid(object? value)
-        {
-            var findings = value as List<MaintenanceFinding>;
-            if (findings == null)
+            if (localizer is not null)
             {
-                return true; // Not applicable, let Required attribute handle this
+                if (BladderId == 0)
+                {
+                    yield return new ValidationResult(
+                        localizer.localize("this field is required"),
+                        new[] { "BladderId" }
+                    );
+                }
+                foreach (var finding in MaintenanceFindings)
+                {
+                    finding.Validate(validationContext);
+                }
             }
 
-            return findings.GroupBy(f => f.FindingId).All(g => g.Count() == 1);
         }
     }
+
+    
+
+    
 }

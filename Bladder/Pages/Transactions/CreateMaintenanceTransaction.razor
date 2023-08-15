@@ -23,8 +23,8 @@
         <h3>@L["Create Maintenance Transaction"]</h3>
     </div>
     <div class="card-body">
-        <EditForm Context="editContext" Model="MaintenanceTransaction" OnValidSubmit="CreateTransaction">
-            <ObjectGraphDataAnnotationsValidator />
+        <EditForm Context="editcontext" Model="MaintenanceTransaction" OnValidSubmit="CreateTransaction">
+            <DataAnnotationsValidator />
 
 
             <RadzenRow>
@@ -41,7 +41,7 @@
             @foreach (var maintenanceFinding in MaintenanceTransaction.MaintenanceFindings)
             {
                 <div class="form-group">
-                    <label class="form-label">@L["Finding"]</label>
+                    <label class="form-label">@L["Observation"]</label>
                     <div class="row">
                             
                         <div class="col">
@@ -52,6 +52,7 @@
                                         <div class="mx-2">@((context as Finding).Description)</div>
                                     </div>
                                 </Template>
+                                
 
                             </RadzenDropDownDataGrid>
                             <ValidationMessage For="()=>maintenanceFinding.FindingId" />
@@ -66,12 +67,12 @@
 
 
 
-                    <ValidationMessage style="color:red;" For="()=> MaintenanceTransaction.MaintenanceFindings" />
                 </div>
             }
+                    <ValidationMessage style="color:red;" For="()=> MaintenanceTransaction.MaintenanceFindings" />
             @if (!isDisabled)
             {
-                <a class="btn btn-success" @onclick="AddFinding">Add Finding</a>
+                <a class="btn btn-success" @onclick="AddFinding">@L["Add Observation"]</a>
             }
 
             <div class="d-flex flex-row justify-content-md-center">
@@ -91,7 +92,7 @@
 
 @code {
     [Parameter] public int TransactionId { get; set; }
-    public MaintenanceTransaction MaintenanceTransaction { get; set; } = new();
+    public MaintenanceTransaction MaintenanceTransaction { get; set; } = new() ;
     public List<BuildingBladder> Bladders { get; set; } = new List<BuildingBladder>();
     public List<BuildingBladder> AllBladders { get; set; } = new List<BuildingBladder>();
     public List<Finding> AvailableFindings { get; set; } = new List<Finding>();
@@ -117,14 +118,14 @@
     {
         if (MaintenanceTransaction.MaintenanceFindings.Count <= 0)
         {
-            await uiNotificationService.Error(L["Please add one or more findings for the bladder "]);
+            await uiNotificationService.Error(L["Please add one or more observations for the bladder "]);
             return;
         }
         foreach (var item in MaintenanceTransaction.MaintenanceFindings)
         {
             if (item.FindingId == 0)
             {
-                await uiNotificationService.Error(L["Please select a findings from the list "]);
+                await uiNotificationService.Error(L["Please select a observations from the list "]);
                 return;
             }
         }
@@ -161,11 +162,5 @@
         }
     }
 
-    private void ToggleDropdown(MaintenanceFinding maintenanceFinding)
-    {
-        if (!isDisabled)
-        {
-            maintenanceFinding.ShowDropdown = !maintenanceFinding.ShowDropdown;
-        }
-    }
+    
 }
