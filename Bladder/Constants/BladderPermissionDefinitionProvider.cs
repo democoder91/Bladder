@@ -37,6 +37,11 @@ namespace Bladder.Constants
             transaction.AddPermission("Transaction_DismountCreate");
             transaction.AddPermission("Transaction_MaintenanceCreate");
             transaction.AddPermission("Transaction_TestCreate");
+
+            var email = context.AddGroup("Emails");
+
+            email.AddPermission("NotifyForBladderExpiry");
+            
         }
     }
 }

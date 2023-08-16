@@ -17,6 +17,7 @@ namespace Bladder.Services
             MailMessage email = new MailMessage(from, to);
             email.Subject = subject;
             email.Body = body;
+            email.IsBodyHtml = true;
 
             SmtpClient smtp = new SmtpClient();
             smtp.Host = "sandbox.smtp.mailtrap.io";

@@ -71,7 +71,7 @@ public class Program
             await builder.AddApplicationAsync<BladderModule>();
             var app = builder.Build();
             app.UseHangfireDashboard();
-            RecurringJob.AddOrUpdate<IBladderExpirationService>("CheckBladderExpiration", bladderExpirationService => bladderExpirationService.CheckAndSendNotificationsAsync(), Cron.Minutely);
+            RecurringJob.AddOrUpdate<IBladderExpirationService>("CheckBladderExpiration", bladderExpirationService => bladderExpirationService.CheckAndSendNotificationsAsync(), Cron.Daily);
             await app.InitializeApplicationAsync();
 
             if (IsMigrateDatabase(args))
