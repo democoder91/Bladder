@@ -15,13 +15,11 @@ namespace Bladder.Services
     {
         private readonly BladderDbContext context;
         private readonly IRepository<BladderTransaction> repository;
-        private readonly IEmailService emailSender;
 
-        public BladderTransactionService(BladderDbContext context, IRepository<BladderTransaction> repository, IEmailService emailSender)
+        public BladderTransactionService(BladderDbContext context, IRepository<BladderTransaction> repository)
         {
             this.context = context;
             this.repository = repository;
-            this.emailSender = emailSender;
         }
 
         public async Task<BladderTransaction> GetAsync(int id)
@@ -37,7 +35,6 @@ namespace Bladder.Services
         public async Task CreateAsync(BladderTransaction transaction)
         {
             await repository.InsertAsync(transaction);
-            await emailSender.SendEmailAsync( "demo.composer2@gmail.com" , $"{transaction.TransactionType} created!", $"<h1>{transaction.TransactionType} created!</h1>");
 
             
         }
