@@ -42,7 +42,7 @@
                         <option value="">Select Status</option>
                         @foreach (var status in Enum.GetValues(typeof(BladderStatus)))
                         {
-                            <option value="@status.ToString()">@status.ToString()</option>
+                            <option value="@status.ToString()">@L[status.ToString()]</option>
                         }
                     </InputSelect>
                 </div>
@@ -79,7 +79,11 @@
                         @(((DateTime)bladder.ExpiryDate).ToString("dd/MM/yyyy"))
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="BuildingBladder" Property="Status" Title="@L["Status"]" />
+                <RadzenDataGridColumn TItem="BuildingBladder" Property="Status" Title="@(L["Status"] )" >
+                    <Template>
+                        @L[context.Status]
+                    </Template>
+                </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="BuildingBladder" Title="@L["Action"]">
                     <Template Context="bladder">
                         <AuthorizeView Policy="Bladder_Edit">

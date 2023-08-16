@@ -22,6 +22,7 @@ namespace Bladder.Entities
         public string Status { get; set; }
         public int? MachineId { get; set; }
         public BuildingMachine? Machine { get; set; }
+        public bool ExpiryNotificationSent { get; set; } = false;
 
         public IEnumerable<ValidationResult> Validate(
             ValidationContext validationContext)

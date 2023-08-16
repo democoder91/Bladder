@@ -20,6 +20,18 @@
                     <InputText @bind-Value="@MachineCodeFilter" class="form-control" />
                 </div>
             </Column>
+
+            <Column>
+                <div class="form-group">
+                    <div class="label">@L["Status"]</div>
+                    <InputSelect @bind-Value="@MachineStatusFilter" class="form-control">
+                        <option value="">@L["Select Status"]</option>
+                        <option value="Stopped">@L["Stopped"]</option>
+                        <option value="Full">@L["Full"]</option>
+                        
+                    </InputSelect>
+                </div>
+            </Column>
         </Row>
 
         <div class="d-flex flex-row">
@@ -70,6 +82,7 @@
 @code {
     public List<BuildingMachine> Machines { get; set; } = new();
     public string? MachineCodeFilter { get; set; } = string.Empty;
+    public string? MachineStatusFilter { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,6 +96,11 @@
         if (!string.IsNullOrEmpty(MachineCodeFilter))
         {
             query = query.Where(b => b.Code.Contains(MachineCodeFilter));
+        }
+        if (!string.IsNullOrEmpty(MachineStatusFilter))
+        {
+            
+            query = query.Where(b => b.Full == (MachineStatusFilter == "Stopped"? false:true));
         }
 
         Machines = query.ToList();

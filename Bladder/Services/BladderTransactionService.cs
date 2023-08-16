@@ -2,8 +2,11 @@
 using Bladder.Data;
 using Bladder.Entities;
 using Bladder.Entities.Transactions;
+using Bladder.Localization;
 using Castle.Core.Smtp;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Polly;
 using System.Transactions;
 using Volo.Abp.Domain.Repositories;
@@ -15,11 +18,17 @@ namespace Bladder.Services
     {
         private readonly BladderDbContext context;
         private readonly IRepository<BladderTransaction> repository;
+        private readonly IBackgroundJobClient backgroundJobClient;
+        private readonly IEmailService emailService;
+        private readonly IStringLocalizer<BladderResource> localizer;
 
-        public BladderTransactionService(BladderDbContext context, IRepository<BladderTransaction> repository)
+        public BladderTransactionService(BladderDbContext context, IRepository<BladderTransaction> repository, IBackgroundJobClient backgroundJobClient)
         {
             this.context = context;
             this.repository = repository;
+            this.backgroundJobClient = backgroundJobClient;
+            this.emailService = emailService;
+            this.localizer = localizer;
         }
 
         public async Task<BladderTransaction> GetAsync(int id)
@@ -35,8 +44,7 @@ namespace Bladder.Services
         public async Task CreateAsync(BladderTransaction transaction)
         {
             await repository.InsertAsync(transaction);
-
-            
+            backgroundJobClient.Enqueue(()=> Console.WriteLine($"transaction of type {transaction.TransactionType} Transaction has been created"));
         }
 
         public async Task UpdateAsync(BladderTransaction transaction)

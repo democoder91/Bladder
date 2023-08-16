@@ -91,22 +91,9 @@
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Transaction Type"]"  >
                 <Template>
-                        @if (context.TransactionType == TransactionTypes.تركيب.ToString())
-                        {
-                            @L["Mount"]
-                        }
-                        @if (context.TransactionType == TransactionTypes.فك.ToString())
-                        {
-                            @L["Dismount"]
-                        }
-                        @if (context.TransactionType == TransactionTypes.صيانة.ToString())
-                        {
-                            @L["Maintenance"]
-                        }
-                        @if (context.TransactionType == TransactionTypes.اختبار.ToString())
-                        {
-                            @L["Test"]
-                        }
+
+                        @L[context.TransactionType]
+                        
                     </Template>
                     </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Action"]" Filterable="false" Reorderable="false" Sortable="false">

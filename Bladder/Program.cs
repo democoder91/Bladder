@@ -1,6 +1,8 @@
 using Bladder.Data;
 using Bladder.Localization;
 using Bladder.Services;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.Extensions.Localization;
 using Serilog;
 using Serilog.Events;
@@ -42,7 +44,22 @@ public class Program
             builder.Services.AddScoped<IBuildingBladderService, BuildingBladderService>();
             builder.Services.AddScoped<IFindingService, FindingService>();
             builder.Services.AddScoped<IBladderTransactionService, BladderTransactionService>();
+            builder.Services.AddScoped<IBladderExpirationService, BladderExpirationService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddHangfire(configuration => configuration
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(builder.Configuration.GetConnectionString("Default"), new SqlServerStorageOptions
+        {
+            CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+            SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+            QueuePollInterval = TimeSpan.Zero,
+            UseRecommendedIsolationLevel = true,
+            DisableGlobalLocks = true
+        }));
+            builder.Services.AddHangfireServer();
+
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();
@@ -53,6 +70,8 @@ public class Program
             }
             await builder.AddApplicationAsync<BladderModule>();
             var app = builder.Build();
+            app.UseHangfireDashboard();
+            RecurringJob.AddOrUpdate<IBladderExpirationService>("CheckBladderExpiration", bladderExpirationService => bladderExpirationService.CheckAndSendNotificationsAsync(), Cron.Minutely);
             await app.InitializeApplicationAsync();
 
             if (IsMigrateDatabase(args))
@@ -60,7 +79,6 @@ public class Program
                 await app.Services.GetRequiredService<BladderDbMigrationService>().MigrateAsync();
                 return 0;
             }
-
             Log.Information("Starting Bladder.");
             await app.RunAsync();
             return 0;

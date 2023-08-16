@@ -52,6 +52,7 @@ using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
+using Bladder.Services;
 
 namespace Bladder;
 
@@ -110,7 +111,7 @@ public class BladderModule : AbpModule
 {
     /* Single point to enable/disable multi-tenancy */
     public const bool IsMultiTenant = false;
-
+   
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
@@ -141,7 +142,6 @@ public class BladderModule : AbpModule
         {
             context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
         }
-
         ConfigureAuthentication(context);
         ConfigureUrls(configuration);
         ConfigureBundles();

@@ -8,6 +8,15 @@
     "Menu:Bladders": "Bladders",
     "Menu:Findings": "Findings",
     "Menu:BladderTransactions": "Bladder Transactions",
-    "Validation.Required": "This field is required."
+    "Validation.Required": "This field is required.",
+    "تركيب": "Mount",
+    "فك": "Dismount",
+    "صيانة": "Maintenance",
+    "اختبار": "Test",
+    "يعمل": "Mounted",
+    "تحت_الصيانة": "Under Maintenance",
+    "في_الاختبار": "In Testing",
+    "جاهز": "Ready",
+
   }
 }

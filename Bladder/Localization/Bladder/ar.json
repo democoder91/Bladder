@@ -86,7 +86,13 @@
     "Observation": "المشكلة",
     "make sure you chose all observations": "تاكد من اختيار جميع المشكلات",
     "Please add one or more observations for the bladder ": "اضف مشكلة واحدة على الاقل للبلادر",
-    "Please select a observations from the list ": "اختر مشكلة من القائمة"
+    "Please select a observations from the list ": "اختر مشكلة من القائمة",
+    "تحت_الصيانة": "تحت الصيانة",
+    "في_الاختبار": "في الاختبار",
+    "يعمل": "يعمل",
+    "جاهز": "جاهز",
+    "Full": "تعمل"
+
 
 
   }
