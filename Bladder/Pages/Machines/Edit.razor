@@ -17,18 +17,18 @@
         <EditForm Model="Machine" OnValidSubmit="UpdateMachine">
             <DataAnnotationsValidator />
 
-            <Row>
-                <Column>
+            <RadzenRow>
+                <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Machine Code"]</label>
                         <InputText @bind-Value="Machine.Code" class="form-control" />
                         <ValidationMessage style="color:red;" For="() => Machine.Code" />
                     </div>
-                </Column>
+                </RadzenColumn>
                 
 
                 
-            </Row>
+            </RadzenRow>
             <div class="d-flex flex-row justify-content-md-center">
                 <div class="form-group mx-1">
                     <button type="submit" class="btn btn-primary">@L["Edit"]</button>

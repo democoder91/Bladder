@@ -17,32 +17,32 @@
         <EditForm Model="Finding" OnValidSubmit="UpdateFinding">
             <DataAnnotationsValidator />
 
-            <Row>
-                <Column>
+            <RadzenRow>
+                <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Bootstrap Icon Class"]</label>
                         <InputText @bind-Value="Finding.IconClass" class="form-control" />
                         <ValidationMessage style="color:red;" For="() => Finding.IconClass" />
                     </div>
-                </Column>
-                <Column>
+                </RadzenColumn>
+                <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Description"]</label>
                         <InputText @bind-Value="Finding.Description" class="form-control" />
                         <ValidationMessage style="color:red;" For="() => Finding.Description" />
                     </div>
-                </Column>
+                </RadzenColumn>
                 
 
                 
-            </Row>
-            <Row>
+            </RadzenRow>
+            <RadzenRow>
                 <Span>
                     @L["Don't Know where to get the icons ? "]
                     <a href="https://icons.getbootstrap.com/#icons" target="_blank">@L["click here"]</a>
 
                 </Span>
-            </Row>
+            </RadzenRow>
             <div class="d-flex flex-row justify-content-md-center">
                 <div class="form-group mx-1">
                     <button type="submit" class="btn btn-primary">@L["Edit"]</button>

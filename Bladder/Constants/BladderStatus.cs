@@ -2,10 +2,10 @@
 {
     public enum BladderStatus
     {
-        يعمل,
-        تحت_الصيانة,
-        في_الاختبار,
-        جاهز
+        Mounted,
+        Maintenance,
+        Testing,
+        Ready
 
     }
 }

@@ -23,7 +23,7 @@
         <h3>@L["Create Maintenance Transaction"]</h3>
     </div>
     <div class="card-body">
-        <EditForm Context="editcontext" Model="MaintenanceTransaction" OnValidSubmit="CreateTransaction">
+        <RadzenTemplateForm Context="editcontext" TItem="MaintenanceTransaction" Data=@MaintenanceTransaction ValidSubmit Submit="CreateTransaction">
             <DataAnnotationsValidator />
 
 
@@ -31,9 +31,9 @@
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Bladder Code"]</label>
-                        <RadzenDropDown Disabled="isDisabled" @bind-Value=MaintenanceTransaction.BladderId AllowVirtualization="true"
-                                        AllowFiltering="true" Data=@(isDisabled ? AllBladders : Bladders) TextProperty="BladderCode" ValueProperty="Id" Style="width: 100%;" />
-                        <ValidationMessage style="color:red;" For="() =>MaintenanceTransaction.BladderId " />
+                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode class="w-100" Name="ScannedBladderCode" />
+                        <RadzenRequiredValidator Component="ScannedBladderCode" Text="@L["this field is required"]" />
+                        <RadzenCustomValidator Component="ScannedBladderCode" Validator="OnBladderCodeChange" Text="@L["Scanned Bladder Dose Not Exist"]" Popup=false />
                     </div>
                 </RadzenColumn>
             </RadzenRow>
@@ -86,7 +86,7 @@
                     <a href="/Transactions/Index" class="btn btn-secondary">@L["Cancel"]</a>
                 </div>
             </div>
-        </EditForm>
+        </RadzenTemplateForm>
     </div>
 </div>
 
@@ -113,6 +113,24 @@
             AllBladders = await bladderService.GetAllAsync();
         }
     }
+    public string? ScannedBladderCode { get; set; }
+    public bool OnBladderCodeChange()
+    {
+        if (ScannedBladderCode is not null)
+        {
+            if (Bladders.Select(b => b.BladderCode).Contains(ScannedBladderCode))
+            {
+                MaintenanceTransaction.BladderId = Bladders.FirstOrDefault(b => b.BladderCode == ScannedBladderCode).Id;
+            }
+            return Bladders.Select(b => b.BladderCode).Contains(ScannedBladderCode);
+        }
+        else
+        {
+            return true;
+        }
+
+    }
+
 
     private async Task CreateTransaction()
     {
@@ -134,7 +152,7 @@
             item.Finding = null;
         }
         MaintenanceTransaction.CreatedAt = DateTime.Now;
-        MaintenanceTransaction.TransactionType = TransactionTypes.صيانة.ToString();
+        MaintenanceTransaction.TransactionType = TransactionTypes.Maintenance.ToString();
         await transactionService.CreateAsync(MaintenanceTransaction);
 
 
@@ -142,7 +160,7 @@
         var selectedBladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MaintenanceTransaction.BladderId);
         if (selectedBladder != null)
         {
-            selectedBladder.Status = BladderStatus.في_الاختبار.ToString();
+            selectedBladder.Status = BladderStatus.Testing.ToString();
             await bladderService.UpdateAsync(selectedBladder);
         }
 

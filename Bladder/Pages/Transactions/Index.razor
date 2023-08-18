@@ -13,6 +13,7 @@
 @inject IBladderTransactionService transactionService;
 @inject IJSRuntime jsRuntime
 @inject IUiNotificationService uiNotificationService
+@inject NavigationManager navManager
 @attribute [Authorize("Transaction_Index")]
 
 
@@ -24,29 +25,29 @@
         <h2>@L["Filters"]</h2>
     </div>
     <div class="card-body">
-        <Row>
-            <Column>
+        <RadzenRow>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Bladder Code"]</div>
                     <InputText @bind-Value="@BladderCodeFilter" class="form-control" />
                 </div>
-            </Column>
+            </RadzenColumn>
 
-            <Column>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Created At (From)"]</div>
                     <InputDate @bind-Value="@CreatedAtFromFilter" class="form-control" />
                 </div>
-            </Column>
+            </RadzenColumn>
 
-            <Column>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Created At (To)"]</div>
                     <InputDate @bind-Value="@CreatedAtToFilter" class="form-control" />
                 </div>
-            </Column>
+            </RadzenColumn>
 
-            <Column>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Transaction Type"]</div>
                     <InputSelect @bind-Value="@TransactionTypeFilter" class="form-control">
@@ -57,13 +58,15 @@
                         }
                     </InputSelect>
                 </div>
-            </Column>
-        </Row>
+            </RadzenColumn>
+        </RadzenRow>
 
-        <div class="d-flex flex-row">
-            <div class="form-group mx-1"><a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a></div>
-            <div class="form-group mx-1"><a @onclick="ClearFilters" class="btn btn-secondary">@L["Reset"]</a></div>
-        </div>
+        
+        <RadzenRow>
+            <div class="mx-1"><RadzenButton Click=ApplyFilters Text="@L["Filter"]" ButtonStyle="ButtonStyle.Primary" /></div>
+            <div class="mx-1"><RadzenButton Click=ClearFilters Text="@L["Reset"]" ButtonStyle="ButtonStyle.Secondary" /></div>
+        </RadzenRow>
+
     </div>
 </div>
 
@@ -73,13 +76,24 @@
             <div>
                 <h2>@L["Bladder Transactions"]</h2>
             </div>
-            <AuthorizeView Policy="Bladder_Create">
-                <TransactionDropdown />
-            </AuthorizeView>
+            <RadzenRow>
+                <AuthorizeView Policy="Transaction_MountCreate">
+                    <RadzenColumn><RadzenButton Click=@(args => OnClick("/Transactions/CreateMountTransaction")) Text="@L["Mount"]" ButtonStyle="ButtonStyle.Primary" /></RadzenColumn>
+                </AuthorizeView>
+                <AuthorizeView Policy="Transaction_DismountCreate">
+                    <RadzenColumn><RadzenButton Click=@(args => OnClick("/Transactions/CreateDismountTransaction")) Text="@L["Dismount"]" ButtonStyle="ButtonStyle.Primary" /></RadzenColumn>
+                </AuthorizeView>
+                <AuthorizeView Policy="Transaction_MaintenanceCreate">
+                    <RadzenColumn><RadzenButton Click=@(args => OnClick("/Transactions/CreateMaintenanceTransaction")) Text="@L["Maintenance"]" ButtonStyle="ButtonStyle.Primary" /></RadzenColumn>
+                </AuthorizeView>
+                <AuthorizeView Policy="Transaction_TestCreate">
+                    <RadzenColumn><RadzenButton Click=@(args => OnClick("/Transactions/CreateTestTransaction")) Text="@L["Test"]" ButtonStyle="ButtonStyle.Primary" /></RadzenColumn>
+                </AuthorizeView>
+            </RadzenRow>
         </div>
     </div>
     <div class="card-body">
-        <RadzenDataGrid @bind-Value=@selectedItems Data="@FilteredTransactions" TItem="BladderTransaction" ColumnWidth="200px"
+        <RadzenDataGrid @bind-Value=@selectedItems Data="@FilteredTransactions" TItem="BladderTransaction" RazenColumnWidth="200px"
                         AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterMode="FilterMode.Advanced"
                         AllowPaging="true" PageSize="@pageSize" AllowSorting="true">
             <Columns>
@@ -89,7 +103,7 @@
                         @context.CreatedAt.ToString("dd/MM/yyyy")
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Transaction Type"]"  >
+                <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Transaction Type"]">
                 <Template>
 
                         @L[context.TransactionType]
@@ -98,19 +112,19 @@
                     </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Action"]" Filterable="false" Reorderable="false" Sortable="false">
                     <Template>
-                        @if (context.TransactionType == TransactionTypes.تركيب.ToString())
+                        @if (context.TransactionType == TransactionTypes.Mount.ToString())
                         {
                             <a href="/Transactions/CreateMountTransaction/@context.Id">@L["Show"]</a>
                         }
-                        @if (context.TransactionType == TransactionTypes.فك.ToString())
+                        @if (context.TransactionType == TransactionTypes.Dismount.ToString())
                         {
                             <a href="/Transactions/CreateDismountTransaction/@context.Id">@L["Show"]</a>
                         }
-                        @if (context.TransactionType == TransactionTypes.صيانة.ToString())
+                        @if (context.TransactionType == TransactionTypes.Maintenance.ToString())
                         {
                             <a href="/Transactions/CreateMaintenanceTransaction/@context.Id">@L["Show"]</a>
                         }
-                        @if (context.TransactionType == TransactionTypes.اختبار.ToString())
+                        @if (context.TransactionType == TransactionTypes.Test.ToString())
                         {
                             <a href="/Transactions/CreateTestTransaction/@context.Id">@L["Show"]</a>
                         }
@@ -145,6 +159,10 @@
         Transactions = Transactions.OrderByDescending(t => t.CreatedAt).ToList();
         FilteredTransactions = Transactions;
         UpdateFilteredTransactions(0);
+    }
+    private void OnClick(string url)
+    {
+        navManager.NavigateTo(url, true);
     }
 
     private void ApplyFilters()

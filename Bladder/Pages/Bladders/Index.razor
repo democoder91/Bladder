@@ -13,29 +13,29 @@
         <h2>@L["Filters"]</h2>
     </div>
     <div class="card-body">
-        <Row>
-            <Column>
+        <RadzenRow>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Bladder Code"]</div>
                     <InputText @bind-Value="@BladderCodeFilter" class="form-control" />
                 </div>
-            </Column>
+            </RadzenColumn>
 
-            <Column>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Expiry Date From"]</div>
                     <InputDate @bind-Value="@ExpiryDateFromFilter" class="form-control" />
                 </div>
-            </Column>
+            </RadzenColumn>
 
-            <Column>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Expiry Date To"]</div>
                     <InputDate @bind-Value="@ExpiryDateToFilter" class="form-control" />
                 </div>
-            </Column>
+            </RadzenColumn>
 
-            <Column>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Status"]</div>
                     <InputSelect @bind-Value="@StatusFilter" class="form-control">
@@ -46,8 +46,8 @@
                         }
                     </InputSelect>
                 </div>
-            </Column>
-        </Row>
+            </RadzenColumn>
+        </RadzenRow>
 
         <div class="d-flex flex-row">
                 <a @onclick="ApplyFilters" class="btn btn-primary mx-1">@L["Filter"]</a>
@@ -71,15 +71,15 @@
     </div>
     <div class="card-body">
         <RadzenDataGrid @bind-Data=@Bladders 
-        AllowPaging="true" PageSize="10" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
+        AllowPaging="true" PageSize="10" AllowFiltering="true" AllowRazenColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
             <Columns>
                 <RadzenDataGridColumn TItem="BuildingBladder" Property="BladderCode" Title="@L["Bladder Code"]" />
-                <RadzenDataGridColumn TItem="BuildingBladder" Property="ExpiryDate" Title="@L["Expiry Date"]"  >
+                <RadzenDataGridColumn TItem="BuildingBladder" Property="ExpiryDate" Title="@L["Expiry Date"]">
                     <Template Context="bladder">
                         @(((DateTime)bladder.ExpiryDate).ToString("dd/MM/yyyy"))
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="BuildingBladder" Property="Status" Title="@(L["Status"] )" >
+                <RadzenDataGridColumn TItem="BuildingBladder" Property="Status" Title="@(L["Status"] )">
                     <Template>
                         @L[context.Status]
                     </Template>

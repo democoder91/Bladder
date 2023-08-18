@@ -23,16 +23,16 @@
         <h3>@L["Create Dismount Transaction"]</h3>
     </div>
     <div class="card-body">
-        <EditForm Model="DismountTransaction" OnValidSubmit="CreateTransaction">
+        <RadzenTemplateForm TItem="DismountTransaction" Data=@DismountTransaction ValidSubmit Submit="CreateTransaction">
             <DataAnnotationsValidator />
 
             <RadzenRow>
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Bladder Code"]</label>
-                        <RadzenDropDown Disabled="isDisabled" AllowClear="true" @bind-Value=DismountTransaction.BladderId AllowVirtualization="true"
-                                        AllowFiltering="true" Data=@(isDisabled ? AllBladders : Bladders) TextProperty="BladderCode" ValueProperty="Id" Style="width: 100%;" />
-                        <ValidationMessage style="color:red;" For="() =>DismountTransaction.BladderId " />
+                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode class="w-100" Name="ScannedBladderCode" />
+                        <RadzenRequiredValidator Component="ScannedBladderCode" Text="@L["this field is required"]" />
+                        <RadzenCustomValidator Component="ScannedBladderCode" Validator="OnBladderCodeChange" Text="@L["Scanned Bladder Dose Not Exist"]" Popup=false />
                     </div>
                 </RadzenColumn>
             </RadzenRow>
@@ -48,7 +48,7 @@
                     <a href="/Transactions/Index" class="btn btn-secondary">@L["Cancel"]</a>
                 </div>
             </div>
-        </EditForm>
+        </RadzenTemplateForm>
     </div>
 </div>
 
@@ -63,9 +63,16 @@
     {
         if (TransactionId != 0)
         {
-            DismountTransaction = await context.Set<DismountTransaction>().FirstOrDefaultAsync(dt => dt.Id == TransactionId);
+            DismountTransaction = await context.Set<DismountTransaction>()
+            .Include(dt => dt.Bladder)
+            .FirstOrDefaultAsync(dt => dt.Id == TransactionId);
             isDisabled = true;
             AllBladders = await bladderService.GetAllAsync();
+        }
+
+        if (isDisabled)
+        {
+            ScannedBladderCode = DismountTransaction.Bladder.BladderCode;
         }
         
         
@@ -73,13 +80,31 @@
         Bladders = await bladderService.GetAllDismountableAsync();
     }
 
+    public string? ScannedBladderCode { get; set; }
+    public bool OnBladderCodeChange()
+    {
+        if (ScannedBladderCode is not null)
+        {
+            if (Bladders.Select(b => b.BladderCode).Contains(ScannedBladderCode))
+            {
+                DismountTransaction.BladderId = Bladders.FirstOrDefault(b => b.BladderCode == ScannedBladderCode).Id;
+            }
+            return Bladders.Select(b => b.BladderCode).Contains(ScannedBladderCode);
+        }
+        else
+        {
+            return true;
+        }
+
+    }
+
     private async Task CreateTransaction()
     {
         DismountTransaction.CreatedAt = DateTime.Now;
-        DismountTransaction.TransactionType = TransactionTypes.فك.ToString();
+        DismountTransaction.TransactionType = TransactionTypes.Dismount.ToString();
         await transactionService.CreateAsync(DismountTransaction);
         DismountTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == DismountTransaction.BladderId);
-        DismountTransaction.Bladder.Status = BladderStatus.تحت_الصيانة.ToString();
+        DismountTransaction.Bladder.Status = BladderStatus.Maintenance.ToString();
 
         await bladderService.UpdateAsync(DismountTransaction.Bladder);
 

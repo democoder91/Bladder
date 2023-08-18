@@ -24,30 +24,31 @@
         <h3>@L["Create Mount Transaction"]</h3>
     </div>
     <div class="card-body">
-        <EditForm Model="MountTransaction" OnValidSubmit="CreateTransaction">
+        <RadzenTemplateForm TItem="MountTransaction" Data=@MountTransaction  Submit="CreateTransaction">
             <DataAnnotationsValidator />
 
-            <RadzenRow>
+            
+                <RadzenRow>
                 <RadzenColumn>
-                    <div class="form-group">
-                        <label class="form-label">@L["Bladder Code"]</label>
-                        <RadzenDropDown Disabled="isDisabled" AllowClear="true" @bind-Value=MountTransaction.BladderId AllowVirtualization="true"
-                                        AllowFiltering="true" Data=@(isDisabled ? AllBladders: Bladders) TextProperty="BladderCode" ValueProperty="Id" Style="width: 100%;" />
-                        <ValidationMessage style="color:red;" For="() =>MountTransaction.BladderId " />
-                    </div>
-                </RadzenColumn>
-                
+                        <div class="form-group">
+                            <label class="form-label">@L["Bladder Code"]</label>
+                            <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode  class="w-100" Name="ScannedBladderCode" />
+                            <RadzenRequiredValidator Component="ScannedBladderCode" Text="@L["this field is required"]" />
+                            <RadzenCustomValidator Component="ScannedBladderCode" Validator="OnBladderCodeChange" Text="@L["Scanned Bladder Dose Not Exist"]" Popup=false />
+                        </div>
+                    </RadzenColumn>
+
 
                 <RadzenColumn>
-                    <div class="form-group">
-                        <label class="form-label">@L["Machine Code"]</label>
-                        
-                        <RadzenDropDown Disabled="isDisabled" AllowClear="true" @bind-Value=MountTransaction.MachineId AllowVirtualization="true"
-                                        AllowFiltering="true" Data=@(isDisabled?AllMachines:Machines) TextProperty="Code" ValueProperty="Id" Style="width: 100%;" />
-                        <ValidationMessage style="color:red;" For="() => MountTransaction.MachineId" />
+                        <div class="form-group">
+                            <label class="form-label">@L["Machine Code"]</label>
+
+                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedMachineCode class="w-100" Name="ScannedMachineCode" />
+                        <RadzenRequiredValidator Component="ScannedMachineCode" Text="@L["this field is required"]" />
+                        <RadzenCustomValidator Component="ScannedMachineCode" Validator="OnMachineCodeChange" Text="@L["Scanned Machine Dose Not Exist"]" Popup=false />
                     </div>
-                </RadzenColumn>
-            </RadzenRow>
+                    </RadzenColumn>
+                </RadzenRow>
 
             <div class="d-flex flex-row justify-content-md-center">
                 <div class="form-group mx-1">
@@ -60,7 +61,7 @@
                     <a href="/Transactions/Index" class="btn btn-secondary">@L["Cancel"]</a>
                 </div>
             </div>
-        </EditForm>
+        </RadzenTemplateForm>
     </div>
 </div>
 
@@ -78,24 +79,70 @@
     {
         if (TransactionId != 0)
         {
-            MountTransaction = await context.Set<MountTransaction>().FirstOrDefaultAsync(mt => mt.Id == TransactionId);
+            MountTransaction = await context.Set<MountTransaction>()
+            .Include(mt => mt.Bladder)
+            .Include(mt => mt.Machine)
+            .FirstOrDefaultAsync(mt => mt.Id == TransactionId);
             isDisabled = true;
         }
+        if (isDisabled)
+        {
+            ScannedBladderCode = MountTransaction.Bladder.BladderCode;    
+            ScannedMachineCode = MountTransaction.Machine.Code;    
+        }
+
         Bladders = await bladderService.GetAllMountableAsync();
         AllBladders = await bladderService.GetAllAsync();
         Machines = await machineService.GetAllAsync();
         Machines = Machines.Where(m => ! m.Full).ToList(); 
         AllMachines = await machineService.GetAllAsync();
     }
+    public string? ScannedBladderCode { get; set; }
+    public bool OnBladderCodeChange()
+    {
+        if (ScannedBladderCode is not null)
+        {
+            if (Bladders.Select(b => b.BladderCode).Contains(ScannedBladderCode))
+            {
+                MountTransaction.BladderId = Bladders.FirstOrDefault(b => b.BladderCode == ScannedBladderCode).Id;
+            }
+            return Bladders.Select(b => b.BladderCode).Contains(ScannedBladderCode);
+        }
+        else
+        {
+            return true;
+        }
+
+    }
+
+    public string? ScannedMachineCode { get; set; }
+    public bool OnMachineCodeChange()
+    {
+        if (ScannedMachineCode is not null)
+        {
+            if (Machines.Select(b => b.Code).Contains(ScannedMachineCode))
+            {
+                MountTransaction.MachineId = Machines.FirstOrDefault(b => b.Code == ScannedMachineCode).Id;
+            }
+            return Machines.Select(b => b.Code).Contains(ScannedMachineCode);
+        }
+        else
+        {
+            return true;
+        }
+
+        
+    }
 
     private  async Task CreateTransaction()
     {
+        
         MountTransaction.CreatedAt = DateTime.Now;
-        MountTransaction.TransactionType = TransactionTypes.تركيب.ToString();
+        MountTransaction.TransactionType = TransactionTypes.Mount.ToString();
         await transactionService.CreateAsync(MountTransaction);
         navigationManager.NavigateTo("/Transactions/Index");
         MountTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MountTransaction.BladderId);
-        MountTransaction.Bladder.Status = BladderStatus.يعمل.ToString();
+        MountTransaction.Bladder.Status = BladderStatus.Mounted.ToString();
         MountTransaction.Machine = await context.Machines.FirstOrDefaultAsync(b => b.Id == MountTransaction.MachineId);
         MountTransaction.Machine.Full = true;
 

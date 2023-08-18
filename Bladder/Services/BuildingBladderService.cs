@@ -56,21 +56,21 @@ namespace Bladder.Services
 
         public async Task<List<BuildingBladder>> GetAllMountableAsync()
         {
-            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.جاهز.ToString()).ToListAsync();
+            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.Ready.ToString()).ToListAsync();
         }
         public async Task<List<BuildingBladder>> GetAllDismountableAsync()
         {
-            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.يعمل.ToString()).ToListAsync();
+            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.Mounted.ToString()).ToListAsync();
         }
 
         public async Task<List<BuildingBladder>> GetAllMaintainableAsync()
         {
-            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.تحت_الصيانة.ToString()).ToListAsync();
+            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.Maintenance.ToString()).ToListAsync();
         }
 
         public async Task<List<BuildingBladder>> GetAllTestableAsync()
         {
-            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.في_الاختبار.ToString()).ToListAsync();
+            return await dbContext.Bladders.Where(b => b.Status == BladderStatus.Testing.ToString()).ToListAsync();
         }
     }
 }

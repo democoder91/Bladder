@@ -2,10 +2,10 @@
 {
     public enum TransactionTypes
     {
-        تركيب,
-        فك,
-        صيانة,
-        اختبار
+        Mount,
+        Dismount,
+        Maintenance,
+        Test
 
     }
 }

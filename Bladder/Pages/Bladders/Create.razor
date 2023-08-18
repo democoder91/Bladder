@@ -17,23 +17,23 @@
         <EditForm Model="Bladder" OnValidSubmit="CreateBladder">
             <DataAnnotationsValidator />
 
-            <Row>
-                <Column>
+            <RadzenRow>
+                <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Bladder Code"]</label>
                         <InputText @bind-Value="Bladder.BladderCode" class="form-control" />
                         <ValidationMessage style="color:red;" For="@(() => Bladder.BladderCode)" />
                     </div>
-                </Column>
-                <Column>
+                </RadzenColumn>
+                <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Expiry Date"]</label>
                         <InputDate @bind-Value="Bladder.ExpiryDate" class="form-control" />
                         <ValidationMessage style="color:red;" For="@(() => Bladder.ExpiryDate)" />
                     </div>
-                </Column>
+                </RadzenColumn>
 
-                <Column>
+                <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Status"]</label>
                         <InputSelect @bind-Value="@Bladder.Status" class="form-control">
@@ -45,8 +45,8 @@
                         </InputSelect>
                         <ValidationMessage style="color:red;" For="() => Bladder.Status" />
                     </div>
-                </Column>
-            </Row>
+                </RadzenColumn>
+            </RadzenRow>
             <div class="d-flex flex-row justify-content-md-center">
                 <div class="form-group mx-1">
                     <button type="submit" class="btn btn-primary">@L["Create"]</button>

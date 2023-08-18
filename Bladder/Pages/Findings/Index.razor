@@ -12,14 +12,14 @@
         <h2>@L["Filters"]</h2>
     </div>
     <div class="card-body">
-        <Row>
-            <Column>
+        <RadzenRow>
+            <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Observation Description"]</div>
                     <InputText @bind-Value="@FindingDescriptionFilter" class="form-control" />
                 </div>
-            </Column>
-        </Row>
+            </RadzenColumn>
+        </RadzenRow>
 
         <div class="d-flex flex-row">
             <a @onclick="ApplyFilters" class="btn btn-primary">@L["Filter"]</a>
@@ -43,7 +43,7 @@
     </div>
     <div class="card-body">
         <RadzenDataGrid @bind-Data=@Findings
-                        AllowPaging="true" PageSize="10" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
+                        AllowPaging="true" PageSize="10" AllowFiltering="true" AllowRazenColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
             <Columns>
                 <RadzenDataGridColumn TItem="Finding" Property="IconClass" Title="@L["Observation Icon"]">
                     <Template Context="finding">
