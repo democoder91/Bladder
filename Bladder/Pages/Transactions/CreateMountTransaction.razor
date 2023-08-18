@@ -49,18 +49,41 @@
                     </div>
                     </RadzenColumn>
                 </RadzenRow>
+                <RadzenRow>
+                <RadzenColumn>
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedRotaryJoint Name="CheckBox1" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Rotary Joint"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                </RadzenColumn>
 
-            <div class="d-flex flex-row justify-content-md-center">
-                <div class="form-group mx-1">
+                <RadzenColumn>
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedMainMandrillSeal Name="CheckBox1" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Main Mandrill Seals"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                </RadzenColumn>
+
+                <RadzenColumn>
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedPiping Name="CheckBox1" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Piping"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                </RadzenColumn>
+
+                <RadzenColumn>
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedCopperElement Name="CheckBox1" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Copper Element"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                </RadzenColumn>
+
+                <RadzenColumn>
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedShoulderSeal Name="CheckBox1" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Shoulder Seals"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                </RadzenColumn>
+
+                </RadzenRow>
+
+            <RadzenRow class="mt-2">
                     @if (!isDisabled)
                     {
-                        <button type="submit" class="btn btn-primary">@L["Create Transaction"]</button>
+                            <button type="submit" class="btn btn-primary">@L["Create Transaction"]</button>
                     }
-                </div>
-                <div class="form-group mx-1">
-                    <a href="/Transactions/Index" class="btn btn-secondary">@L["Cancel"]</a>
-                </div>
-            </div>
+                            <a href="/Transactions/Index" class="btn btn-secondary">@L["Cancel"]</a>
+            </RadzenRow>
         </RadzenTemplateForm>
     </div>
 </div>

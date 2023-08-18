@@ -92,9 +92,15 @@
     "يعمل": "يعمل",
     "جاهز": "جاهز",
     "Full": "تعمل",
-    "Mounted" :  "يعمل",
+    "Mounted": "يعمل",
     "Testing": "صيانة",
-    "Ready": "جاهز"
+    "Ready": "جاهز",
+    "Changed Rotary Joint": "تغيير الروتاري",
+    "Changed Main Mandrill Seals" : "تغيير سيلات العامود الرئيسي",
+    "Changed Piping": "تغيير المواسير",
+    "Changed Copper Element": "تغيير النحاسة",
+    "Changed Shoulder Seals" : "تغيير سيلات الكتف"
+
 
 
 

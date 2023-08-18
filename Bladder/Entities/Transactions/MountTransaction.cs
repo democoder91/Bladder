@@ -13,6 +13,11 @@ namespace Bladder.Entities.Transactions
         //[Range(1, int.MaxValue, ErrorMessage ="Machine Id Is Required")]
         public int MachineId { get; set; }
         public BuildingMachine? Machine { get; set; }
+        public bool ChangedRotaryJoint { get; set; }
+        public bool ChangedMainMandrillSeal { get; set; }
+        public bool ChangedPiping { get; set; }
+        public bool ChangedCopperElement { get; set; }
+        public bool ChangedShoulderSeal { get; set; }
 
         // Additional properties specific to Mount transaction
 
