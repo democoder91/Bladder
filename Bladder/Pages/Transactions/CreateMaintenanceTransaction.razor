@@ -45,7 +45,7 @@
                     <div class="row">
                             
                         <div class="col">
-                            <RadzenDropDownDataGrid class="form-control" @bind-Value=@maintenanceFinding.FindingId Data=@AvailableFindings TextProperty="Description" ValueProperty="Id">
+                            <RadzenDropDownDataGrid class="form-control" @bind-Value=@maintenanceFinding.FindingId Data=@AvailableFindings TextProperty="Description" ValueProperty="Id" Name="@($"mf{maintenanceFinding.Index}")">
                                 <Template>
                                     <div class="d-flex flex-row">
                                         <div class="@((context as Finding).IconClass) align-self-xl-end d-flex  flex-column"></div>
@@ -55,7 +55,9 @@
                                 
 
                             </RadzenDropDownDataGrid>
-                            <ValidationMessage For="()=>maintenanceFinding.FindingId" />
+                            <RadzenNumericRangeValidator Component="@($"mf{maintenanceFinding.Index}")" Min="1" Max="@int.MaxValue" Text="@L["this field is required"]" />
+                            <RadzenCustomValidator Component="@($"mf{maintenanceFinding.Index}")" Validator="() => ValidateMaintenanceFinding(maintenanceFinding)" Text="@L["this observation already exists"]" Popup=false />
+
                         </div>
                         @if (!isDisabled)
                         {
@@ -92,6 +94,7 @@
 
 @code {
     [Parameter] public int TransactionId { get; set; }
+    int index;
     public MaintenanceTransaction MaintenanceTransaction { get; set; } = new() ;
     public List<BuildingBladder> Bladders { get; set; } = new List<BuildingBladder>();
     public List<BuildingBladder> AllBladders { get; set; } = new List<BuildingBladder>();
@@ -111,6 +114,12 @@
                 .FirstOrDefaultAsync(mt => mt.Id == TransactionId);
             isDisabled = true;
             AllBladders = await bladderService.GetAllAsync();
+
+            foreach (var maintenanceFinding in MaintenanceTransaction.MaintenanceFindings)
+            {
+                index++;
+                maintenanceFinding.Index = index;   
+            }
         }
     }
     public string? ScannedBladderCode { get; set; }
@@ -131,6 +140,18 @@
 
     }
 
+    public bool ValidateMaintenanceFinding(MaintenanceFinding maintenanceFinding)
+    {
+        var otherFindingIds = MaintenanceTransaction.MaintenanceFindings.Where(mf => mf != maintenanceFinding).Select(mf => mf.FindingId);
+        if (otherFindingIds.Contains(maintenanceFinding.FindingId) && maintenanceFinding.FindingId != 0)
+        {
+            return false;
+
+        }
+        return true;
+
+    }
+
 
     private async Task CreateTransaction()
     {
@@ -139,14 +160,7 @@
             await uiNotificationService.Error(L["Please add one or more observations for the bladder "]);
             return;
         }
-        foreach (var item in MaintenanceTransaction.MaintenanceFindings)
-        {
-            if (item.FindingId == 0)
-            {
-                await uiNotificationService.Error(L["Please select a observations from the list "]);
-                return;
-            }
-        }
+
         foreach (var item in MaintenanceTransaction.MaintenanceFindings)
         {
             item.Finding = null;
@@ -169,7 +183,8 @@
 
     private void AddFinding()
     {
-        MaintenanceTransaction.MaintenanceFindings.Add(new MaintenanceFinding() { MaintenanceTransactionId = MaintenanceTransaction.Id });
+        index++;
+        MaintenanceTransaction.MaintenanceFindings.Add(new MaintenanceFinding() { MaintenanceTransactionId = MaintenanceTransaction.Id , Index = index });
     }
 
     private void RemoveFindingSelect(MaintenanceFinding maintenanceFinding)

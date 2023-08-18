@@ -14,6 +14,8 @@ namespace Bladder.Entities
 
         public int FindingId { get; set; }
         public Finding? Finding { get; set; }
+        [NotMapped]
+        public int Index { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

@@ -28,10 +28,7 @@ namespace Bladder.Entities.Transactions
                         new[] { "BladderId" }
                     );
                 }
-                foreach (var finding in MaintenanceFindings)
-                {
-                    finding.Validate(validationContext);
-                }
+                
             }
 
         }
