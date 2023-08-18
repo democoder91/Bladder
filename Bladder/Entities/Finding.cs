@@ -14,7 +14,7 @@ namespace Bladder.Entities
 
         public List<MaintenanceFinding> MaintenanceFindings { get; set; } = new List<MaintenanceFinding>();
 
-        public IEnumerable<ValidationResult> Validate(
+        public override IEnumerable<ValidationResult> Validate(
     ValidationContext validationContext)
         {
             var localizer = validationContext.GetRequiredService<IStringLocalizer<BladderResource>>();

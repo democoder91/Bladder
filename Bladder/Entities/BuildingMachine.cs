@@ -17,7 +17,7 @@ namespace Bladder.Entities
 
         public int? BladderTwoId { get; set; }
         public BuildingBladder? BladderTwo { get; set; }
-        public IEnumerable<ValidationResult> Validate(
+        public override IEnumerable<ValidationResult> Validate(
             ValidationContext validationContext)
         {
             var localizer = validationContext.GetRequiredService<IStringLocalizer<BladderResource>>();

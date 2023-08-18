@@ -3,7 +3,16 @@ using Volo.Abp.Domain.Repositories;
 
 namespace Bladder.Services
 {
-    public class BuildingMachineService :   IBuildingMachineService
+    public interface IBuildingMachineService
+    {
+        Task CreateAsync(BuildingMachine machine);
+        Task DeleteAsync(int id);
+        Task<List<BuildingMachine>> GetAllAsync();
+        Task<BuildingMachine> GetAsync(int id);
+        Task UpdateAsync(BuildingMachine machine);
+    }
+
+    public class BuildingMachineService : IBuildingMachineService
     {
         private readonly IRepository<BuildingMachine> repository;
 
@@ -14,7 +23,7 @@ namespace Bladder.Services
 
         public async Task<BuildingMachine> GetAsync(int id)
         {
-            return await repository.GetAsync(m =>m.Id == id);
+            return await repository.GetAsync(m => m.Id == id);
         }
 
         public async Task<List<BuildingMachine>> GetAllAsync()
@@ -24,7 +33,7 @@ namespace Bladder.Services
 
         public async Task CreateAsync(BuildingMachine machine)
         {
-            var newMachine = await repository.InsertAsync(machine);            
+            var newMachine = await repository.InsertAsync(machine);
         }
 
         public async Task UpdateAsync(BuildingMachine machine)

@@ -6,10 +6,11 @@
     "Menu:Home": "Home",
     "Menu:Machines": "Machines",
     "Menu:Bladders": "Bladders",
-    "Menu:Findings": "Findings",
+    "Menu:Observations": "Observations",
     "Menu:BladderTransactions": "Bladder Transactions",
-    
-    
+    "Menu:BladderSizes": "Bladder Sizes"
+
+
 
   }
 }

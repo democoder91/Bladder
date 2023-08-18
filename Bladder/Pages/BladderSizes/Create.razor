@@ -1,0 +1,71 @@
+﻿@page "/BladderSizes/Create"
+
+@attribute [Authorize("BladderSize_Create")]
+@inject IBladderSizeService sizeService;
+@inject BladderDbContext dbContext;
+@inject NavigationManager navigationManager;
+@inject IUiNotificationService uiNotificationService
+
+
+@inherits BladderComponentBase
+
+
+<div class="card">
+    <div class="card-header">
+        <h3>@L["Create New Size"]</h3>
+    </div>
+    <div class="card-body">
+        <RadzenTemplateForm TItem="BladderSize" Data=@Size Submit=@CreateMachine >
+            <DataAnnotationsValidator />
+
+            <RadzenRow>
+                <RadzenColumn>
+                    <div class="form-group">
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">@L["Size Name"]</RadzenText>
+                        <RadzenTextBox @bind-Value=Size.Name class="w-100" Name="Machine.code" />
+                        <RadzenRequiredValidator Component="Machine.code" Text="@L["this field is required"]"   />
+                        <RadzenCustomValidator Component="Machine.code" Validator="@(() => ValidateUniqueSize())" Text="@L["Size Name Must Be Unique"]" />
+
+
+                        
+                    </div>
+                </RadzenColumn>
+                
+            </RadzenRow>
+            <div class="d-flex flex-row justify-content-md-center">
+                <div class="form-group mx-1">
+                    <button type="submit" class="btn btn-primary">@L["Create"]</button>
+                </div>
+                <div class="form-group mx-1">
+                    <a href="/BladderSizes/Index" class="btn btn-secondary">@L["Cancel"]</a>
+                </div>
+            </div>
+
+        </RadzenTemplateForm>
+    </div>
+</div>
+
+@code {
+    public BladderSize Size { get; set; } = new() ;
+
+    public bool ValidateUniqueSize()
+    {
+        var existingSize = dbContext.Set<BladderSize>()
+                        .FirstOrDefault(b => b.Id != Size.Id && b.Name == Size.Name);
+
+        if (existingSize != null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public async Task CreateMachine()
+    {
+        
+        await sizeService.CreateAsync(Size);
+        navigationManager.NavigateTo("/BladderSizes/Index", true);
+    }
+    
+
+}

@@ -26,6 +26,7 @@ public class BladderDbContext : AbpDbContext<BladderDbContext>
     public DbSet<Finding> Finding { get; set; }
     public DbSet<BladderTransaction> BladderTransactions { get; set; }
     public DbSet<MaintenanceFinding> MaintenanceFindings { get; set; }
+    public DbSet<BladderSize> BladderSizes { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

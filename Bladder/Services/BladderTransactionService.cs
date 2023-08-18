@@ -14,21 +14,27 @@ using Volo.Abp.Emailing;
 
 namespace Bladder.Services
 {
-    public class BladderTransactionService :   IBladderTransactionService
+    public interface IBladderTransactionService
+    {
+        Task CreateAsync(BladderTransaction transaction);
+        Task DeleteAsync(int id);
+        Task<List<BladderTransaction>> GetAllAsync();
+        Task<BladderTransaction> GetAsync(int id);
+        Task<MountTransaction> GetLastMountTransactionAsync(int bladderId);
+        Task UpdateAsync(BladderTransaction transaction);
+    }
+
+    public class BladderTransactionService : IBladderTransactionService
     {
         private readonly BladderDbContext context;
         private readonly IRepository<BladderTransaction> repository;
         private readonly IBackgroundJobClient backgroundJobClient;
-        private readonly IEmailService emailService;
-        private readonly IStringLocalizer<BladderResource> localizer;
 
         public BladderTransactionService(BladderDbContext context, IRepository<BladderTransaction> repository, IBackgroundJobClient backgroundJobClient)
         {
             this.context = context;
             this.repository = repository;
             this.backgroundJobClient = backgroundJobClient;
-            this.emailService = emailService;
-            this.localizer = localizer;
         }
 
         public async Task<BladderTransaction> GetAsync(int id)
@@ -44,7 +50,7 @@ namespace Bladder.Services
         public async Task CreateAsync(BladderTransaction transaction)
         {
             await repository.InsertAsync(transaction);
-            backgroundJobClient.Enqueue(()=> Console.WriteLine($"transaction of type {transaction.TransactionType} Transaction has been created"));
+            backgroundJobClient.Enqueue(() => Console.WriteLine($"transaction of type {transaction.TransactionType} Transaction has been created"));
         }
 
         public async Task UpdateAsync(BladderTransaction transaction)
@@ -65,6 +71,6 @@ namespace Bladder.Services
                 .FirstOrDefaultAsync();
         }
 
-        
+
     }
 }

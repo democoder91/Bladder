@@ -20,10 +20,12 @@ namespace Bladder.Entities
 
         public DateTime ExpiryDate { get; set; }
         public string Status { get; set; }
-        
+        public int BladderSizeId { get; set; }
+        public BladderSize BladderSize { get; set; }
+
         public bool ExpiryNotificationSent { get; set; } = false;
 
-        public IEnumerable<ValidationResult> Validate(
+        public override IEnumerable<ValidationResult> Validate(
             ValidationContext validationContext)
         {
             var localizer = validationContext.GetRequiredService<IStringLocalizer<BladderResource>>();

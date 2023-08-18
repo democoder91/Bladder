@@ -3,6 +3,11 @@ using Microsoft.Extensions.Localization;
 
 namespace Bladder.Services
 {
+    public interface ILocalizationServiceCustom
+    {
+        string localize(string key);
+    }
+
     public class LocalizationServiceCustom : ILocalizationServiceCustom
     {
         private readonly IStringLocalizer<BladderResource> localizer;

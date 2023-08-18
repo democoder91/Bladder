@@ -30,12 +30,15 @@ public class BladderMenuContributor : IMenuContributor
             );
         context.Menu.AddItem(
                 new ApplicationMenuItem("Bladder", l["Master Data"], groupName: "MasterData")
+                    
                     .AddItem(new ApplicationMenuItem(
-                        name: "Bladder.Machines",
-                        displayName: l["Menu:Machines"],
-                        url: "/Machines/Index",
-                        requiredPermissionName: "Machine_Index"
+                        name: "Bladder.BladderSizes",
+                        displayName: l["Menu:BladderSizes"],
+                        url: "/BladderSizes/Index",
+                        requiredPermissionName: "BladderSize_Index"
                         )
+
+
                     )
                     .AddItem(new ApplicationMenuItem(
                         name: "Bladder.Bladders",
@@ -45,11 +48,20 @@ public class BladderMenuContributor : IMenuContributor
                         )
                     )
                     .AddItem(new ApplicationMenuItem(
-                        name: "Bladder.Findings",
-                        displayName: l["Menu:Findings"],
+                        name: "Bladder.Machines",
+                        displayName: l["Menu:Machines"],
+                        url: "/Machines/Index",
+                        requiredPermissionName: "Machine_Index"
+                        )
+                    )
+                    .AddItem(new ApplicationMenuItem(
+                        name: "Bladder.Observations",
+                        displayName: l["Menu:Observations"],
                         url: "/Findings/Index",
                         requiredPermissionName: "Finding_Index"
                         )
+
+
                     )
 
             );

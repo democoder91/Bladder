@@ -38,6 +38,14 @@ namespace Bladder.Constants
             transaction.AddPermission("Transaction_MaintenanceCreate");
             transaction.AddPermission("Transaction_TestCreate");
 
+            var bladderSize = context.AddGroup("BladderSize");
+
+            bladderSize.AddPermission("BladderSize_Index");
+            bladderSize.AddPermission("BladderSize_Create");
+            bladderSize.AddPermission("BladderSize_Edit");
+            bladderSize.AddPermission("BladderSize_Show");
+            bladderSize.AddPermission("BladderSize_Delete");
+
             var email = context.AddGroup("Emails");
 
             email.AddPermission("NotifyForBladderExpiry");

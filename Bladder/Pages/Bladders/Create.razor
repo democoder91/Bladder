@@ -2,6 +2,7 @@
 
 @attribute [Authorize("Bladder_Create")]
 @inject IBuildingBladderService bladderService;
+@inject IBladderSizeService sizeService;
 @inject BladderDbContext dbContext;
 @inject NavigationManager navigationManager;
 @inject IUiNotificationService uiNotificationService
@@ -14,7 +15,7 @@
         <h3>@L["Create New Bladder"]</h3>
     </div>
     <div class="card-body">
-        <EditForm Model="Bladder" OnValidSubmit="CreateBladder">
+        <RadzenTemplateForm TItem="BuildingBladder" Data=@Bladder Submit=@CreateBladder >
             <DataAnnotationsValidator />
 
             <RadzenRow>
@@ -23,6 +24,13 @@
                         <label class="form-label">@L["Bladder Code"]</label>
                         <InputText @bind-Value="Bladder.BladderCode" class="form-control" />
                         <ValidationMessage style="color:red;" For="@(() => Bladder.BladderCode)" />
+                    </div>
+                </RadzenColumn>
+                <RadzenColumn>
+                    <div class="form-group">
+                        <label class="form-label">@L["Bladder Size"]</label>
+                        <RadzenDropDown Name="BladderSize" class="form-control" @bind-Value=@Bladder.BladderSizeId Data=@Sizes TextProperty="Name" ValueProperty="Id" Style="width: 100%; " />
+                        <RadzenNumericRangeValidator Component="BladderSize" Min="1" Max="int.MaxValue" Text=@L["this field is required"]  />
                     </div>
                 </RadzenColumn>
                 <RadzenColumn>
@@ -56,12 +64,19 @@
                 </div>
             </div>
 
-        </EditForm>
+        </RadzenTemplateForm>
     </div>
 </div>
 
 @code {
     public BuildingBladder Bladder { get; set; } = new() { ExpiryDate = DateTime.Now };
+    public List<BladderSize> Sizes { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Sizes = await sizeService.GetAllAsync();
+    }
+
     public async Task CreateBladder()
     {
         var existingBladder = dbContext.Set<BuildingBladder>()

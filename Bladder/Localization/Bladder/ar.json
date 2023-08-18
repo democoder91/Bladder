@@ -6,6 +6,7 @@
     "Menu:Home": "الصفحة الرئيسية",
     "Menu:Machines": "ماكينات البناء",
     "Menu:Bladders": "بلادرات البناء",
+    "Menu:BladderSizes": "احجام البلادرات",
     "Menu:Observations": "المشكلات",
     "Menu:BladderTransactions": "عمليات البلادرات",
     "Master Data": "البيانات الاساسية",
@@ -100,10 +101,19 @@
     "Changed Piping": "تغيير المواسير",
     "Changed Copper Element": "تغيير النحاسة",
     "Changed Shoulder Seals": "تغيير سيلات الكتف",
-    "Machine Code Must Be Unique": "كود الماكينة موجود بالفعل"
+    "Machine Code Must Be Unique": "كود الماكينة موجود بالفعل",
 
+    "Create New Size": "إنشاء حجم جديد",
+    "Size Name": "اسم الحجم",
+    "Size Name Must Be Unique": "يجب أن يكون اسم الحجم فريدًا",
 
+    "Bladder Sizes": "أحجام البلادر",
+    "Bladder Size Name": "اسم حجم البلادر",
+    "Are you sure you want to delete this Size?": "هل أنت متأكد من رغبتك في حذف هذا الحجم؟",
+    "Bladder Size Deleted Successfully": "تم حذف حجم البلادر بنجاح",
 
+    "Edit Size": "تعديل الحجم",
+    "Bladder Size": "حجم البلادر"
 
   }
 }

@@ -21,7 +21,7 @@ namespace Bladder.Entities.Transactions
 
         // Additional properties specific to Mount transaction
 
-        public IEnumerable<ValidationResult> Validate(
+        public override IEnumerable<ValidationResult> Validate(
     ValidationContext validationContext)
         {
             var localizer = validationContext.GetRequiredService<IStringLocalizer<BladderResource>>();

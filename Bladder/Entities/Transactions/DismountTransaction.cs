@@ -5,7 +5,7 @@ namespace Bladder.Entities.Transactions
 {
     public class DismountTransaction : BladderTransaction, IValidatableObject
     {
-        public IEnumerable<ValidationResult> Validate(
+        public override IEnumerable<ValidationResult> Validate(
     ValidationContext validationContext)
         {
             var localizer = validationContext.GetRequiredService<ILocalizationServiceCustom>();

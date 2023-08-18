@@ -1,6 +1,7 @@
 ﻿@page "/Bladders/Edit/{id:int}"
 @attribute [Authorize("Bladder_Create")]
 @inject IBuildingBladderService bladderService;
+@inject IBladderSizeService sizeService;
 @inject BladderDbContext dbContext;
 @inject NavigationManager navigationManager;
 @inject IUiNotificationService uiNotificationService
@@ -22,6 +23,13 @@
                         <label class="form-label">@L["Bladder Code"]</label>
                         <InputText @bind-Value="Bladder.BladderCode" class="form-control" />
                         <ValidationMessage style="color:red;" For="() => Bladder.BladderCode" />
+                    </div>
+                </RadzenColumn>
+                <RadzenColumn>
+                    <div class="form-group">
+                        <label class="form-label">@L["Bladder Size"]</label>
+                        <RadzenDropDown class="form-control" @bind-Value=@Bladder.BladderSizeId Data=@Sizes TextProperty="Name" ValueProperty="Id" Style="width: 100%; " />
+                        <ValidationMessage style="color:red;" For="() => Bladder.Status" />
                     </div>
                 </RadzenColumn>
                 <RadzenColumn>
@@ -56,6 +64,7 @@
 @code {
     [Parameter] public int Id { get; set; }
     public BuildingBladder Bladder { get; set; } = new() { ExpiryDate = DateTime.Now };
+    public List<BladderSize> Sizes { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,7 +72,10 @@
         {
             Bladder = await bladderService.GetAsync(Id);
         }
+        Sizes = await sizeService.GetAllAsync();
     }
+
+    
 
     public async Task UpdateBladder()
     {

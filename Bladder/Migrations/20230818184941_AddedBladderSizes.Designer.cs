@@ -4,6 +4,7 @@ using Bladder.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Bladder.Migrations
 {
     [DbContext(typeof(BladderDbContext))]
-    partial class BladderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230818184941_AddedBladderSizes")]
+    partial class AddedBladderSizes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,9 +109,6 @@ namespace Bladder.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BladderSizeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasMaxLength(40)
@@ -130,8 +130,6 @@ namespace Bladder.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BladderSizeId");
 
                     b.ToTable("Bladders");
                 });
@@ -1893,17 +1891,6 @@ namespace Bladder.Migrations
                         .IsRequired();
 
                     b.Navigation("Bladder");
-                });
-
-            modelBuilder.Entity("Bladder.Entities.BuildingBladder", b =>
-                {
-                    b.HasOne("Bladder.Entities.BladderSize", "BladderSize")
-                        .WithMany()
-                        .HasForeignKey("BladderSizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BladderSize");
                 });
 
             modelBuilder.Entity("Bladder.Entities.BuildingMachine", b =>

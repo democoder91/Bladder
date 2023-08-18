@@ -4,10 +4,15 @@ using Volo.Abp.Emailing;
 
 namespace Bladder.Services
 {
-    public class EmailService:IEmailService 
+    public interface IEmailService
+    {
+        void Send(string emailFrom, string emailTo, string subject, string body);
+    }
+
+    public class EmailService : IEmailService
     {
 
-        
+
 
         public void Send(string emailFrom, string emailTo, string subject, string body)
         {

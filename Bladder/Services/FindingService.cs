@@ -5,7 +5,16 @@ using Volo.Abp.Domain.Repositories;
 
 namespace Bladder.Services
 {
-    public class FindingService :   IFindingService
+    public interface IFindingService
+    {
+        Task CreateAsync(Finding finding);
+        Task DeleteAsync(int id);
+        Task<List<Finding>> GetAllAsync();
+        Task<Finding> GetAsync(int id);
+        Task UpdateAsync(Finding finding);
+    }
+
+    public class FindingService : IFindingService
     {
         private readonly IRepository<Finding> repository;
         private readonly BladderDbContext dbContext;
@@ -18,7 +27,7 @@ namespace Bladder.Services
 
         public async Task<Finding> GetAsync(int id)
         {
-            return await repository.GetAsync(m =>m.Id == id);
+            return await repository.GetAsync(m => m.Id == id);
         }
 
         public async Task<List<Finding>> GetAllAsync()
@@ -28,7 +37,7 @@ namespace Bladder.Services
 
         public async Task CreateAsync(Finding finding)
         {
-            var newBladder = await repository.InsertAsync(finding);            
+            var newBladder = await repository.InsertAsync(finding);
         }
 
         public async Task UpdateAsync(Finding finding)
@@ -40,6 +49,6 @@ namespace Bladder.Services
         {
             await repository.DeleteAsync(m => m.Id == id);
         }
-        
+
     }
 }

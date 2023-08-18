@@ -2,6 +2,7 @@
 
 @inherits BladderComponentBase
 @inject IBuildingBladderService bladderService;
+@inject IBladderSizeService sizeService;
 @inject IJSRuntime jsRuntime
 @inject IUiNotificationService uiNotificationService
 @attribute [Authorize("Bladder_Index")]
@@ -18,6 +19,13 @@
                 <div class="form-group">
                     <div class="label">@L["Bladder Code"]</div>
                     <InputText @bind-Value="@BladderCodeFilter" class="form-control" />
+                </div>
+            </RadzenColumn>
+
+            <RadzenColumn>
+                <div class="form-group">
+                    <div class="label">@L["Bladder Size"]</div>
+                    <RadzenDropDown @bind-Value=@BladderSizeFilter Data=@Sizes TextProperty="Name" ValueProperty="Id" class="form-control" />
                 </div>
             </RadzenColumn>
 
@@ -49,10 +57,10 @@
             </RadzenColumn>
         </RadzenRow>
 
-        <div class="d-flex flex-row">
+        <RadzenRow class="d-flex flex-row">
                 <a @onclick="ApplyFilters" class="btn btn-primary mx-1">@L["Filter"]</a>
                 <a @onclick="ClearFilters" class="btn btn-secondary mx-1">@L["Reset"]</a>
-        </div>
+        </RadzenRow>
     </div>
 </div>
 
@@ -74,6 +82,11 @@
         AllowPaging="true" PageSize="10" AllowFiltering="true" AllowRazenColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
             <Columns>
                 <RadzenDataGridColumn TItem="BuildingBladder" Property="BladderCode" Title="@L["Bladder Code"]" />
+                <RadzenDataGridColumn TItem="BuildingBladder"  Title="@L["Bladder Size"]" >
+                    <Template Context="bladder">
+                        @(bladder.BladderSize.Name)
+                    </Template>
+                    </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="BuildingBladder" Property="ExpiryDate" Title="@L["Expiry Date"]">
                     <Template Context="bladder">
                         @(((DateTime)bladder.ExpiryDate).ToString("dd/MM/yyyy"))
@@ -102,13 +115,16 @@
 @code {
     public List<BuildingBladder> Bladders { get; set; } = new();
     public string? BladderCodeFilter { get; set; } = string.Empty;
+    public int? BladderSizeFilter { get; set; }
     public DateTime? ExpiryDateFromFilter { get; set; }
     public DateTime? ExpiryDateToFilter { get; set; }
     public string? StatusFilter { get; set; } = string.Empty;
-
+    public List<BladderSize> Sizes { get; set; }
     protected override async Task OnInitializedAsync()
     {
         Bladders = await bladderService.GetAllAsync();
+        Sizes = await sizeService.GetAllAsync();
+
     }
 
     public async Task ApplyFilters()
@@ -119,6 +135,10 @@
         if (!string.IsNullOrEmpty(BladderCodeFilter))
         {
             query = query.Where(b => b.BladderCode.Contains(BladderCodeFilter));
+        }
+        if (BladderSizeFilter != null)
+        {
+            query = query.Where(b => b.BladderSizeId == BladderSizeFilter);
         }
         if (ExpiryDateFromFilter is not null)
         {
@@ -136,13 +156,14 @@
         Bladders = query.ToList();
     }
 
-    public async void ClearFilters()
+    public async Task ClearFilters()
     {
         Bladders = await bladderService.GetAllAsync();
         BladderCodeFilter = null;
         ExpiryDateFromFilter = null;
         ExpiryDateToFilter = null;
-        StatusFilter = null;
+        StatusFilter = null; 
+        BladderSizeFilter = null;
     }
 
     private async Task ConfirmDelete(int id)

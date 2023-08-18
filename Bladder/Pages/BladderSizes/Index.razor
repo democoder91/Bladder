@@ -1,0 +1,119 @@
+﻿@page "/BladderSizes/Index"
+
+@inherits BladderComponentBase
+@inject IBladderSizeService sizeService;
+@inject IJSRuntime jsRuntime
+@inject IUiNotificationService uiNotificationService
+@attribute [Authorize("BladderSize_Index")]
+
+<h1>@L["Bladder Sizes"]</h1>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2>@L["Filters"]</h2>
+    </div>
+    <div class="card-body">
+        <RadzenRow>
+            <RadzenColumn>
+                <div class="form-group">
+                    <div class="label">@L["Bladder Size Name"]</div>
+                    <InputText @bind-Value="@BladderSizeNameFilter" class="form-control" />
+                </div>
+            </RadzenColumn>
+
+            
+        </RadzenRow>
+
+        <div class="d-flex flex-row">
+            <a @onclick="ApplyFilters" class="btn btn-primary mx-1">@L["Filter"]</a>
+            <a @onclick="ClearFilters" class="btn btn-secondary mx-1">@L["Reset"]</a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <div class="d-flex flex-row justify-content-between">
+            <div>
+                <h2>@L["Bladder Sizes"]</h2>
+            </div>
+            <AuthorizeView Policy="BladderSize_Create">
+                <div>
+                    <a href="/BladderSizes/Create" class="btn btn-primary">@L["Create New Size"]</a>
+                </div>
+            </AuthorizeView>
+        </div>
+    </div>
+    <div class="card-body">
+        <RadzenDataGrid @bind-Data=@Sizes
+                        AllowPaging="true" PageSize="10" AllowFiltering="true" AllowRazenColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
+            <Columns>
+                <RadzenDataGridColumn TItem="BladderSize" Property="Name" Title="@L["Size Name"]" />
+                <RadzenDataGridColumn TItem="BladderSize"  Title="@L["Action"]" >
+                    <Template Context="bladderSize">
+                        <AuthorizeView Policy="BladderSize_Edit">
+                            <a href="/BladderSizes/Edit/@bladderSize.Id" class="btn btn-link">@L["Edit"]</a>
+                        </AuthorizeView>
+                        <AuthorizeView Policy="BladderSize_Delete">
+                            <a @onclick="()=> ConfirmDelete(bladderSize.Id)" class="btn btn-link">@L["Delete"]</a>
+                        </AuthorizeView>
+                    </Template>
+                </RadzenDataGridColumn>
+                
+            </Columns>
+        </RadzenDataGrid>
+    </div>
+</div>
+
+@code {
+    public List<BladderSize> Sizes { get; set; } = new();
+    public string? BladderSizeNameFilter { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Sizes = await sizeService.GetAllAsync();
+    }
+
+    public async Task ApplyFilters()
+    {
+        Sizes = await sizeService.GetAllAsync();
+        var query = Sizes.AsQueryable();
+        if (!string.IsNullOrEmpty(BladderSizeNameFilter))
+        {
+            query = query.Where(b => b.Name.Contains(BladderSizeNameFilter));
+        }
+        
+
+        Sizes = query.ToList();
+    }
+
+    public async void ClearFilters()
+    {
+        Sizes= await sizeService.GetAllAsync();
+        BladderSizeNameFilter = null;
+    }
+
+    private async Task ConfirmDelete(int id)
+    {
+        var result = await jsRuntime.InvokeAsync<bool>("confirm", L["Are you sure you want to delete this Size?"].ToString());
+        if (result)
+        {
+            // User confirmed the deletion, proceed with deletion logic
+            await DeleteBladderSize(id);
+        }
+    }
+
+    private async Task DeleteBladderSize(int id)
+    {
+        // Call the service to delete the machine
+        await sizeService.DeleteAsync(id);
+
+        
+        // Refresh the machine list
+        Sizes = await sizeService.GetAllAsync();
+
+        // Show success notification
+        await uiNotificationService.Success(@L["Bladder Size Deleted Successfully"]);
+        
+    }
+}

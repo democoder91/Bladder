@@ -14,7 +14,7 @@ namespace Bladder.Entities.Transactions
         public List<MaintenanceFinding> MaintenanceFindings { get; set; } = new List<MaintenanceFinding>();
 
         // Additional properties specific to Maintenance transaction
-        public IEnumerable<ValidationResult> Validate(
+        public override IEnumerable<ValidationResult> Validate(
     ValidationContext validationContext)
         {
             var localizer = validationContext.GetRequiredService<ILocalizationServiceCustom>();

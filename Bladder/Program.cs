@@ -42,6 +42,7 @@ public class Program
             builder.Services.AddScoped<ILocalizationServiceCustom, LocalizationServiceCustom>();
             builder.Services.AddScoped<IBuildingMachineService, BuildingMachineService>();
             builder.Services.AddScoped<IBuildingBladderService, BuildingBladderService>();
+            builder.Services.AddScoped<IBladderSizeService, BladderSizeService>();
             builder.Services.AddScoped<IFindingService, FindingService>();
             builder.Services.AddScoped<IBladderTransactionService, BladderTransactionService>();
             builder.Services.AddScoped<IBladderExpirationService, BladderExpirationService>();
