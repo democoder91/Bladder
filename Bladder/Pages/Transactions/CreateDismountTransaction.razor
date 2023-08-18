@@ -74,8 +74,8 @@
         {
             ScannedBladderCode = DismountTransaction.Bladder.BladderCode;
         }
-        
-        
+
+
 
         Bladders = await bladderService.GetAllDismountableAsync();
     }
@@ -116,7 +116,20 @@
             var buildingMachine = await context.Machines.FirstOrDefaultAsync(bm => bm.Id == lastMountTransaction.MachineId);
             if (buildingMachine != null)
             {
-                buildingMachine.Full = false;
+                if (buildingMachine.BladderOneId == DismountTransaction.BladderId)
+                {
+                    buildingMachine.BladderOneId = null;
+                }
+                else if (buildingMachine.BladderTwoId == DismountTransaction.BladderId)
+                {
+                    buildingMachine.BladderTwoId = null;
+                }
+
+                if (buildingMachine.BladderOneId == null || buildingMachine.BladderTwoId == null)
+                {
+                    buildingMachine.Full = false;  
+                }
+                context.Machines.Update(buildingMachine);
                 await context.SaveChangesAsync();
             }
         }

@@ -154,12 +154,12 @@
             return true;
         }
 
-        
+
     }
 
     private  async Task CreateTransaction()
     {
-        
+
         MountTransaction.CreatedAt = DateTime.Now;
         MountTransaction.TransactionType = TransactionTypes.Mount.ToString();
         await transactionService.CreateAsync(MountTransaction);
@@ -167,7 +167,21 @@
         MountTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MountTransaction.BladderId);
         MountTransaction.Bladder.Status = BladderStatus.Mounted.ToString();
         MountTransaction.Machine = await context.Machines.FirstOrDefaultAsync(b => b.Id == MountTransaction.MachineId);
-        MountTransaction.Machine.Full = true;
+        if (MountTransaction.Machine.BladderOneId == null)
+        {
+            MountTransaction.Machine.BladderOneId = MountTransaction.BladderId;
+        }
+        else if (MountTransaction.Machine.BladderTwoId == null)
+        {
+            MountTransaction.Machine.BladderTwoId = MountTransaction.BladderId;
+        }
+        
+
+
+        if (MountTransaction.Machine.BladderOneId != null && MountTransaction.Machine.BladderTwoId != null)
+        {
+            MountTransaction.Machine.Full = true;
+        }
 
         await machineService.UpdateAsync(MountTransaction.Machine);
         await bladderService.UpdateAsync(MountTransaction.Bladder);
