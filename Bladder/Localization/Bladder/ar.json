@@ -96,10 +96,11 @@
     "Testing": "صيانة",
     "Ready": "جاهز",
     "Changed Rotary Joint": "تغيير الروتاري",
-    "Changed Main Mandrill Seals" : "تغيير سيلات العامود الرئيسي",
+    "Changed Main Mandrill Seals": "تغيير سيلات العامود الرئيسي",
     "Changed Piping": "تغيير المواسير",
     "Changed Copper Element": "تغيير النحاسة",
-    "Changed Shoulder Seals" : "تغيير سيلات الكتف"
+    "Changed Shoulder Seals": "تغيير سيلات الكتف",
+    "Machine Code Must Be Unique": "كود الماكينة موجود بالفعل"
 
 
 

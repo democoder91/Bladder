@@ -60,7 +60,7 @@ namespace Bladder.Migrations
 
                     b.HasIndex("BladderId");
 
-                    b.ToTable("BladderTransactions");
+                    b.ToTable("BladderTransactions", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("BladderTransaction");
 
@@ -106,7 +106,7 @@ namespace Bladder.Migrations
 
                     b.HasIndex("MachineId");
 
-                    b.ToTable("Bladders");
+                    b.ToTable("Bladders", (string)null);
                 });
 
             modelBuilder.Entity("Bladder.Entities.BuildingMachine", b =>
@@ -136,7 +136,7 @@ namespace Bladder.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Machines");
+                    b.ToTable("Machines", (string)null);
                 });
 
             modelBuilder.Entity("Bladder.Entities.Finding", b =>
@@ -167,7 +167,7 @@ namespace Bladder.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Finding");
+                    b.ToTable("Finding", (string)null);
                 });
 
             modelBuilder.Entity("Bladder.Entities.MaintenanceFinding", b =>
@@ -182,7 +182,7 @@ namespace Bladder.Migrations
 
                     b.HasIndex("FindingId");
 
-                    b.ToTable("MaintenanceFindings");
+                    b.ToTable("MaintenanceFindings", (string)null);
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

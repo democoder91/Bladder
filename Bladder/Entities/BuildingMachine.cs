@@ -11,7 +11,6 @@ namespace Bladder.Entities
     {
         //[Required]
         public string Code { get; set; }
-        public List<BuildingBladder> Bladders { get; set; }
         public bool Full { get; set; }
         public IEnumerable<ValidationResult> Validate(
             ValidationContext validationContext)

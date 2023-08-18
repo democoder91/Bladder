@@ -57,7 +57,7 @@
     <div class="card-body">
         <RadzenDataGrid @bind-Data=@Machines
                         AllowPaging="true" PageSize="10" AllowFiltering="true" AllowRazenColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced">
-            <RazenColumns>
+            <Columns>
                 <RadzenDataGridColumn TItem="BuildingMachine" Property="Code" Title="@L["Machine Code"]" />
                 <RadzenDataGridColumn TItem="BuildingMachine" Property="Full" Title="@L["Status"]">
                     <Template Context="machine">
@@ -74,7 +74,7 @@
                         </AuthorizeView>
                     </Template>
                 </RadzenDataGridColumn>
-            </RazenColumns>
+            </Columns>
         </RadzenDataGrid>
     </div>
 </div>

@@ -15,15 +15,19 @@
         <h3>@L["Create New Machine"]</h3>
     </div>
     <div class="card-body">
-        <EditForm Model="Machine" OnValidSubmit="CreateMachine">
+        <RadzenTemplateForm TItem="BuildingMachine" Data=@Machine Submit=@CreateMachine >
             <DataAnnotationsValidator />
 
             <RadzenRow>
                 <RadzenColumn>
                     <div class="form-group">
-                        <label class="form-label">@L["Machine Code"]</label>
-                        <InputText @bind-Value="Machine.Code" class="form-control" />
-                        <ValidationMessage style="color:red;" For="@(() => Machine.Code)" />
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">@L["Machine Code"]</RadzenText>
+                        <RadzenTextBox @bind-Value=Machine.Code class="w-100" Name="Machine.code" />
+                        <RadzenRequiredValidator Component="Machine.code" Text="@L["this field is required"]"   />
+                        <RadzenCustomValidator Component="Machine.code" Validator="@(() => ValidateUniqueMachine())" Text="@L["Machine Code Must Be Unique"]" />
+
+
+                        
                     </div>
                 </RadzenColumn>
                 
@@ -37,22 +41,28 @@
                 </div>
             </div>
 
-        </EditForm>
+        </RadzenTemplateForm>
     </div>
 </div>
 
 @code {
     public BuildingMachine Machine { get; set; } = new() ;
-    public async Task CreateMachine()
+
+    public bool ValidateUniqueMachine()
     {
         var existingMachine = dbContext.Set<BuildingMachine>()
                         .FirstOrDefault(b => b.Id != Machine.Id && b.Code == Machine.Code);
 
         if (existingMachine != null)
         {
-            await uiNotificationService.Error(L["Machine Code Must Be Unique"]);
-            return;
+            return false;
         }
+        return true;
+    }
+
+    public async Task CreateMachine()
+    {
+        
         await machineService.CreateAsync(Machine);
         navigationManager.NavigateTo("/Machines/Index", true);
     }
