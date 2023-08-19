@@ -22,21 +22,27 @@
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Bladder Code"]</label>
-                        <InputText @bind-Value="Bladder.BladderCode" class="form-control" />
-                        <ValidationMessage style="color:red;" For="@(() => Bladder.BladderCode)" />
+                        <RadzenTextBox @bind-Value=@Bladder.BladderCode class="w-100" Name="BladderCode"/>
+                        <RadzenRequiredValidator Component="BladderCode" Text="@L["this field is required"]"/>
+                        <RadzenCustomValidator Component="BladderCode" Validator=@ValidateUniqueBladderCode Text="@L["Blader Code Already Exists"]"/>
                     </div>
                 </RadzenColumn>
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Bladder Size"]</label>
-                        <RadzenDropDown Name="BladderSize" class="form-control" @bind-Value=@Bladder.BladderSizeId Data=@Sizes TextProperty="Name" ValueProperty="Id" Style="width: 100%; " />
+                        <RadzenDropDown Name="BladderSize"  @bind-Value=@Bladder.BladderSizeId 
+                        Data=@Sizes 
+                        TextProperty="Name" 
+                        ValueProperty="Id" 
+                        Style="width: 100%; " />
+
                         <RadzenNumericRangeValidator Component="BladderSize" Min="1" Max="int.MaxValue" Text=@L["this field is required"]  />
                     </div>
                 </RadzenColumn>
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Expiry Date"]</label>
-                        <InputDate @bind-Value="Bladder.ExpiryDate" class="form-control" />
+                        <RadzenDatePicker @bind-Value=@Bladder.ExpiryDate class="w-100" ShowTime="false" DateFormat="dd/MM/yyyy" />
                         <ValidationMessage style="color:red;" For="@(() => Bladder.ExpiryDate)" />
                     </div>
                 </RadzenColumn>
@@ -44,25 +50,20 @@
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Status"]</label>
-                        <InputSelect @bind-Value="@Bladder.Status" class="form-control">
-                            <option value="">@L["Select Status"]</option>
-                            @foreach (var status in Enum.GetValues(typeof(BladderStatus)))
-                            {
-                                <option value="@status.ToString()">@status.ToString()</option>
-                            }
-                        </InputSelect>
+                        <RadzenDropDown @bind-Value=@Bladder.Status Data=@BladderStatusStrings Style="width: 100%;" />
                         <ValidationMessage style="color:red;" For="() => Bladder.Status" />
                     </div>
                 </RadzenColumn>
             </RadzenRow>
-            <div class="d-flex flex-row justify-content-md-center">
+            <RadzenRow >
                 <div class="form-group mx-1">
-                    <button type="submit" class="btn btn-primary">@L["Create"]</button>
+                    <RadzenButton ButtonType="ButtonType.Submit" Text="@L["Create"]" ButtonStyle="ButtonStyle.Primary" />
+
                 </div>
                 <div class="form-group mx-1">
-                    <a href="/Bladders/Index" class="btn btn-secondary">@L["Cancel"]</a>
+                    <RadzenButton Click=@(args => navigationManager.NavigateTo("/Bladders/Index")) Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Secondary" />
                 </div>
-            </div>
+            </RadzenRow>
 
         </RadzenTemplateForm>
     </div>
@@ -71,10 +72,28 @@
 @code {
     public BuildingBladder Bladder { get; set; } = new() { ExpiryDate = DateTime.Now };
     public List<BladderSize> Sizes { get; set; }
+    public List<string> BladderStatusStrings { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         Sizes = await sizeService.GetAllAsync();
+        foreach (var item in Enum.GetNames(typeof(BladderStatus)))
+        {
+            BladderStatusStrings.Add(L[item]);    
+        }
+    }
+    public bool ValidateUniqueBladderCode()
+    {
+        if (Bladder.BladderCode is not null)
+        {
+            var otherBladders = dbContext.Bladders.Where(b => b.Id != Bladder.Id).Where(b => b.BladderCode == Bladder.BladderCode).ToList();
+            if (otherBladders.Count > 0)
+            {
+                return false;   
+            }
+            return true;
+        }
+        return true;
     }
 
     public async Task CreateBladder()

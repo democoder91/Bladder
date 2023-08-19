@@ -4,6 +4,7 @@
 @inject IBuildingBladderService bladderService;
 @inject IBladderSizeService sizeService;
 @inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager;
 @inject IUiNotificationService uiNotificationService
 @attribute [Authorize("Bladder_Index")]
 
@@ -57,9 +58,14 @@
             </RadzenColumn>
         </RadzenRow>
 
-        <RadzenRow class="d-flex flex-row">
-                <a @onclick="ApplyFilters" class="btn btn-primary mx-1">@L["Filter"]</a>
-                <a @onclick="ClearFilters" class="btn btn-secondary mx-1">@L["Reset"]</a>
+        <RadzenRow>
+            <div class="form-group mx-1">
+                <RadzenButton Click="ApplyFilters" Text="@L["Filter"]" ButtonStyle="ButtonStyle.Primary" />
+
+            </div>
+            <div class="form-group mx-1">
+                <RadzenButton Click="ClearFilters" Text="@L["Reset"]" ButtonStyle="ButtonStyle.Secondary" />
+            </div>
         </RadzenRow>
     </div>
 </div>
@@ -72,7 +78,7 @@
             </div>
             <AuthorizeView Policy="Bladder_Create">
                 <div>
-                    <a href="/Bladders/Create" class="btn btn-primary">@L["Create New Bladder"]</a>
+                    <RadzenButton Click=@(args => navigationManager.NavigateTo("/Bladders/Create")) Text="@L["Create New Bladder"]" ButtonStyle="ButtonStyle.Success" />
                 </div>
             </AuthorizeView>
         </div>
