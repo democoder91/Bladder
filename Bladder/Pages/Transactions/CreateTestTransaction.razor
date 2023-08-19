@@ -34,7 +34,7 @@
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Bladder Code"]</label>
-                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode class="w-100" Name="ScannedBladderCode" />
+                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode class="w-100" Name="ScannedBladderCode" AutoComplete=false />
                         <RadzenRequiredValidator Component="ScannedBladderCode" Text="@L["this field is required"]" />
                         <RadzenCustomValidator Component="ScannedBladderCode" Validator="OnBladderCodeChange" Text="@L["Scanned Bladder Dose Not Exist"]" Popup=false />
                     </div>

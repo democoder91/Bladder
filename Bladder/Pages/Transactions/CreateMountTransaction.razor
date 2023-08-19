@@ -32,7 +32,7 @@
                 <RadzenColumn>
                         <div class="form-group">
                             <label class="form-label">@L["Bladder Code"]</label>
-                            <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode  class="w-100" Name="ScannedBladderCode" />
+                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode class="w-100" Name="ScannedBladderCode" AutoComplete=false />
                             <RadzenRequiredValidator Component="ScannedBladderCode" Text="@L["this field is required"]" />
                             <RadzenCustomValidator Component="ScannedBladderCode" Validator="OnBladderCodeChange" Text="@L["Scanned Bladder Dose Not Exist"]" Popup=false />
                         </div>
@@ -43,7 +43,7 @@
                         <div class="form-group">
                             <label class="form-label">@L["Machine Code"]</label>
 
-                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedMachineCode class="w-100" Name="ScannedMachineCode" />
+                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedMachineCode class="w-100" Name="ScannedMachineCode" AutoComplete=false />
                         <RadzenRequiredValidator Component="ScannedMachineCode" Text="@L["this field is required"]" />
                         <RadzenCustomValidator Component="ScannedMachineCode" Validator="OnMachineCodeChange" Text="@L["Scanned Machine Dose Not Exist"]" Popup=false />
                     </div>
@@ -56,23 +56,23 @@
                 </RadzenColumn>
 
                 <RadzenColumn>
-                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedMainMandrillSeal Name="CheckBox1" Disabled=@isDisabled />
-                    <RadzenLabel Text="@L["Changed Main Mandrill Seals"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedMainMandrillSeal Name="CheckBox2" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Main Mandrill Seals"]" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
                 </RadzenColumn>
 
                 <RadzenColumn>
-                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedPiping Name="CheckBox1" Disabled=@isDisabled />
-                    <RadzenLabel Text="@L["Changed Piping"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedPiping Name="CheckBox3" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Piping"]" Component="CheckBox3" Style="margin-left: 8px; vertical-align: middle;" />
                 </RadzenColumn>
 
                 <RadzenColumn>
-                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedCopperElement Name="CheckBox1" Disabled=@isDisabled />
-                    <RadzenLabel Text="@L["Changed Copper Element"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedCopperElement Name="CheckBox4" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Copper Element"]" Component="CheckBox4" Style="margin-left: 8px; vertical-align: middle;" />
                 </RadzenColumn>
 
                 <RadzenColumn>
-                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedShoulderSeal Name="CheckBox1" Disabled=@isDisabled />
-                    <RadzenLabel Text="@L["Changed Shoulder Seals"]" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value=@MountTransaction.ChangedShoulderSeal Name="CheckBox5" Disabled=@isDisabled />
+                    <RadzenLabel Text="@L["Changed Shoulder Seals"]" Component="CheckBox5" Style="margin-left: 8px; vertical-align: middle;" />
                 </RadzenColumn>
 
                 </RadzenRow>
