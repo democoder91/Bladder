@@ -115,7 +115,9 @@
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="BladderTransaction" Title="@L["Action"]" Filterable="false" Reorderable="false" Sortable="false">
                     <Template>
-                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Click="()=> RedirectToCreateTransaction(context)" class=""><RadzenIcon Icon="delete_forever"></RadzenIcon></RadzenButton>
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Click="()=> RedirectToCreateTransaction(context)" class="">
+                            <RadzenIcon Icon="visibility"></RadzenIcon>
+                        </RadzenButton>
                         @if (context == Transactions
                         .GroupBy(t => t.BladderId)
                         .Where(l => l.Key == context.BladderId)
