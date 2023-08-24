@@ -185,12 +185,18 @@
     private async Task DeleteBladder(int id)
     {
         // Call the service to delete the bladder
-        await bladderService.DeleteAsync(id);
+        var deleted = await bladderService.DeleteAsync(id);
 
+        if (deleted)
+        {
+            await uiNotificationService.Success(@L["Bladder Deleted Successfully"]);
+        }else
+        {
+            await uiNotificationService.Error(@L["This Bladder Cannot Be Deleted"]);
+        }
         // Refresh the bladder list
         Bladders = await bladderService.GetAllAsync();
 
         // Show success notification
-        await uiNotificationService.Success(@L["Bladder Deleted Successfully"]);
     }
 }

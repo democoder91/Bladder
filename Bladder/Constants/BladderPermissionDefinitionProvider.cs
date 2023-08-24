@@ -37,6 +37,7 @@ namespace Bladder.Constants
             transaction.AddPermission("Transaction_DismountCreate");
             transaction.AddPermission("Transaction_MaintenanceCreate");
             transaction.AddPermission("Transaction_TestCreate");
+            transaction.AddPermission("Transaction_Delete");
 
             var bladderSize = context.AddGroup("BladderSize");
 

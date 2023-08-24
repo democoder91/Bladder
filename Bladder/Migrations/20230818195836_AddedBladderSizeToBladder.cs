@@ -15,7 +15,7 @@ namespace Bladder.Migrations
                 table: "Bladders",
                 type: "int",
                 nullable: false,
-                defaultValue: 7);
+                defaultValue:1);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bladders_BladderSizeId",

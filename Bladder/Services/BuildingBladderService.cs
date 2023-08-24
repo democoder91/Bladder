@@ -10,7 +10,7 @@ namespace Bladder.Services
     public interface IBuildingBladderService
     {
         Task CreateAsync(BuildingBladder bladder);
-        Task DeleteAsync(int id);
+        Task<bool> DeleteAsync(int id);
         Task<List<BuildingBladder>> GetAllAsync();
         Task<List<BuildingBladder>> GetAllDismountableAsync();
         Task<List<BuildingBladder>> GetAllMaintainableAsync();
@@ -52,9 +52,19 @@ namespace Bladder.Services
             var newBladder = await repository.UpdateAsync(bladder);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            await repository.DeleteAsync(m => m.Id == id);
+            var machines = new List<BuildingMachine>();
+            //var bladder = await dbContext.Bladders.FindAsync(id);
+            machines = await dbContext.Machines.Where(m => m.BladderOneId == id || m.BladderTwoId == id).ToListAsync();
+
+            if (machines.Count == 0)
+            {
+                await repository.DeleteAsync(m => m.Id == id);
+                return true;
+            }
+
+            return false;
         }
         public async Task<bool> IsBladderCodeUnique(string bladderCode, int? currentBladderId = null)
         {
