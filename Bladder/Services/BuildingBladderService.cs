@@ -56,7 +56,7 @@ namespace Bladder.Services
         {
             var machines = new List<BuildingMachine>();
             //var bladder = await dbContext.Bladders.FindAsync(id);
-            machines = await dbContext.Machines.Where(m => m.BladderOneId == id || m.BladderTwoId == id).ToListAsync();
+            machines = await dbContext.Machines.Where(m => m.LeftBladderId == id || m.RightBladderId == id).ToListAsync();
 
             if (machines.Count == 0)
             {

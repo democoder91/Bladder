@@ -49,7 +49,7 @@
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Status"]</label>
-                        <RadzenDropDown @bind-Value=@Bladder.Status Data=@BladderStatusStrings Style="width: 100%;" ReadOnly=@IsDisabled/>
+                        <RadzenDropDown @bind-Value=@Bladder.Status Data=@BladderStatusStrings TextProperty="Value" ValueProperty="Key" Style="width: 100%;" ReadOnly=@IsDisabled/>
                         <ValidationMessage style="color:red;" For="() => Bladder.Status" />
                     </div>
                 </RadzenColumn>
@@ -73,8 +73,10 @@
     public BuildingBladder Bladder { get; set; } = new() { ExpiryDate = DateTime.Now };
     public List<BladderSize> Sizes { get; set; }
     public bool IsDisabled { get; set; }
-    public List<string> BladderStatusStrings { get; set; } = new();
+    // Assuming there is an Enum called BladderStatus
+    // And "L" is an object with localized strings
 
+    public Dictionary<string, string> BladderStatusStrings { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,11 +87,12 @@
         }
         Sizes = await sizeService.GetAllAsync();
 
-        foreach (var item in Enum.GetNames(typeof(BladderStatus)))
+        foreach (var item in Enum.GetValues(typeof(BladderStatus)))
         {
-            BladderStatusStrings.Add(L[item]);
+            BladderStatusStrings.Add(item.ToString(), L[item.ToString()]);
         }
     }
+    
     public bool ValidateUniqueBladderCode()
     {
         if (Bladder.BladderCode is not null)

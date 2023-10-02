@@ -29,24 +29,32 @@
 
             
                 <RadzenRow>
-                <RadzenColumn>
+                    <RadzenColumn>
                         <div class="form-group">
                             <label class="form-label">@L["Bladder Code"]</label>
-                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode class="w-100" Name="ScannedBladderCode" AutoComplete=false />
+                            <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedBladderCode class="w-100" Name="ScannedBladderCode" AutoComplete=false />
                             <RadzenRequiredValidator Component="ScannedBladderCode" Text="@L["this field is required"]" />
                             <RadzenCustomValidator Component="ScannedBladderCode" Validator="OnBladderCodeChange" Text="@L["Scanned Bladder Dose Not Exist"]" Popup=false />
-                        </div>
+                            </div>
                     </RadzenColumn>
 
-
-                <RadzenColumn>
+                    <RadzenColumn>
                         <div class="form-group">
                             <label class="form-label">@L["Machine Code"]</label>
 
-                        <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedMachineCode class="w-100" Name="ScannedMachineCode" AutoComplete=false />
-                        <RadzenRequiredValidator Component="ScannedMachineCode" Text="@L["this field is required"]" />
-                        <RadzenCustomValidator Component="ScannedMachineCode" Validator="OnMachineCodeChange" Text="@L["Scanned Machine Dose Not Exist"]" Popup=false />
-                    </div>
+                            <RadzenTextBox Disabled=@isDisabled @bind-Value=@ScannedMachineCode class="w-100" Name="ScannedMachineCode" AutoComplete=false />
+                            <RadzenRequiredValidator Component="ScannedMachineCode" Text="@L["this field is required"]" />
+                            <RadzenCustomValidator Component="ScannedMachineCode" Validator="OnMachineCodeChange" Text="@L["Scanned Machine Dose Not Exist"]" Popup=false />
+                        </div>
+                    </RadzenColumn>
+
+                    <RadzenColumn>
+                        <div class="form-group">
+                            <label class="form-label">@L["Mount Place"]</label>
+
+                            <RadzenDropDown  Data=@MountPlaces @bind-Value=@MountPlace class="w-100" Name="MountPlace"/>
+                        <RadzenCustomValidator Component="MountPlace" Validator="OnMountPlaceSelected" Text="@L["Machine is full at that place"]" Popup=false />
+                        </div>
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
@@ -95,6 +103,8 @@
     public List<BuildingBladder> Bladders { get; set; } = new List<BuildingBladder>();
     public List<BuildingMachine> Machines { get; set; } = new List<BuildingMachine>();
     public List<BuildingMachine> AllMachines { get; set; } = new List<BuildingMachine>();
+    public List<string> MountPlaces { get; set; } = new() { "Left", "Right" };
+    public string MountPlace { get; set; }
     bool isDisabled;
 
 
@@ -119,6 +129,43 @@
         Machines = await machineService.GetAllAsync();
         Machines = Machines.Where(m => ! m.Full).ToList(); 
         AllMachines = await machineService.GetAllAsync();
+    }
+    // OnMountPlaceSelected should make sure that the selected machine has the selected mount place empty
+public bool OnMountPlaceSelected()
+    {
+        if (MountPlace is not null)
+        {
+            if (MountPlace == "Left")
+            {
+                if (MountTransaction.Machine.LeftBladderId is null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (MountPlace == "Right")
+            {
+                if (MountTransaction.Machine.RightBladderId is null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
     }
     public string? ScannedBladderCode { get; set; }
     public bool OnBladderCodeChange()
@@ -146,6 +193,7 @@
             if (Machines.Select(b => b.Code).Contains(ScannedMachineCode))
             {
                 MountTransaction.MachineId = Machines.FirstOrDefault(b => b.Code == ScannedMachineCode).Id;
+                MountTransaction.Machine = Machines.FirstOrDefault(b => b.Code == ScannedMachineCode);
             }
             return Machines.Select(b => b.Code).Contains(ScannedMachineCode);
         }
@@ -160,25 +208,23 @@
     private  async Task CreateTransaction()
     {
 
-        MountTransaction.CreatedAt = DateTime.Now;
-        MountTransaction.TransactionType = TransactionTypes.Mount.ToString();
-        await transactionService.CreateAsync(MountTransaction);
-        navigationManager.NavigateTo("/Transactions/Index");
+
         MountTransaction.Bladder = await context.Bladders.FirstOrDefaultAsync(b => b.Id == MountTransaction.BladderId);
         MountTransaction.Bladder.Status = BladderStatus.Mounted.ToString();
         MountTransaction.Machine = await context.Machines.FirstOrDefaultAsync(b => b.Id == MountTransaction.MachineId);
-        if (MountTransaction.Machine.BladderOneId == null)
+
+        if (MountPlace == "Left")
         {
-            MountTransaction.Machine.BladderOneId = MountTransaction.BladderId;
+            MountTransaction.Machine.LeftBladderId = MountTransaction.BladderId;
         }
-        else if (MountTransaction.Machine.BladderTwoId == null)
+        else 
         {
-            MountTransaction.Machine.BladderTwoId = MountTransaction.BladderId;
+            MountTransaction.Machine.RightBladderId = MountTransaction.BladderId;
         }
         
 
 
-        if (MountTransaction.Machine.BladderOneId != null && MountTransaction.Machine.BladderTwoId != null)
+        if (MountTransaction.Machine.LeftBladderId != null && MountTransaction.Machine.RightBladderId != null)
         {
             MountTransaction.Machine.Full = true;
         }
@@ -186,7 +232,13 @@
         await machineService.UpdateAsync(MountTransaction.Machine);
         await bladderService.UpdateAsync(MountTransaction.Bladder);
 
+        MountTransaction.CreatedAt = DateTime.Now;
+        MountTransaction.TransactionType = TransactionTypes.Mount.ToString();
+        MountTransaction.Machine= null;
+        MountTransaction.Bladder = null;
+        await transactionService.CreateAsync(MountTransaction);
         
+        navigationManager.NavigateTo("/Transactions/Index");
 
     }
 }

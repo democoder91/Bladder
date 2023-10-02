@@ -249,13 +249,13 @@
             bladder.Status = BladderStatus.Ready.ToString();
             context.Bladders.Update(bladder);
 
-            if (machine.BladderOneId == bladder.Id)
+            if (machine.LeftBladderId == bladder.Id)
             {
-                machine.BladderOneId = null;
+                machine.LeftBladderId = null;
             }
-            else if (machine.BladderTwoId == bladder.Id)
+            else if (machine.RightBladderId == bladder.Id)
             {
-                machine.BladderTwoId = null;
+                machine.RightBladderId = null;
             }
 
             if (machine.Full)
@@ -284,13 +284,18 @@
                     uiNotificationService.Error(L["this transaction cannot be deleted because the machine is full"]);
                     return;
                 }
-                if (machine.BladderOneId == null)
+                if (machine.LeftBladderId == null)
                 {
-                    machine.BladderOneId = bladder.Id;
+                    machine.LeftBladderId = bladder.Id;
                 }
-                else if (machine.BladderTwoId == null)
+                else if (machine.RightBladderId == null)
                 {
-                    machine.BladderTwoId = bladder.Id;
+                    machine.RightBladderId = bladder.Id;
+                }
+
+                if (machine.LeftBladderId != null && machine.RightBladderId != null)
+                {
+                    machine.Full = true;
                 }
 
                 context.Machines.Update(machine);

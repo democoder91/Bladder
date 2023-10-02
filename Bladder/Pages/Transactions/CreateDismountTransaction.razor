@@ -116,16 +116,16 @@
             var buildingMachine = await context.Machines.FirstOrDefaultAsync(bm => bm.Id == lastMountTransaction.MachineId);
             if (buildingMachine != null)
             {
-                if (buildingMachine.BladderOneId == DismountTransaction.BladderId)
+                if (buildingMachine.LeftBladderId == DismountTransaction.BladderId)
                 {
-                    buildingMachine.BladderOneId = null;
+                    buildingMachine.LeftBladderId = null;
                 }
-                else if (buildingMachine.BladderTwoId == DismountTransaction.BladderId)
+                else if (buildingMachine.RightBladderId == DismountTransaction.BladderId)
                 {
-                    buildingMachine.BladderTwoId = null;
+                    buildingMachine.RightBladderId = null;
                 }
 
-                if (buildingMachine.BladderOneId == null || buildingMachine.BladderTwoId == null)
+                if (buildingMachine.LeftBladderId == null || buildingMachine.RightBladderId == null)
                 {
                     buildingMachine.Full = false;  
                 }

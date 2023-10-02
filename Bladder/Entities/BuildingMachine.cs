@@ -12,11 +12,11 @@ namespace Bladder.Entities
         //[Required]
         public string Code { get; set; }
         public bool Full { get; set; }
-        public int? BladderOneId { get; set; }
-        public BuildingBladder? BladderOne { get; set; }
+        public int? LeftBladderId { get; set; }
+        public BuildingBladder? LeftBladder { get; set; }
 
-        public int? BladderTwoId { get; set; }
-        public BuildingBladder? BladderTwo { get; set; }
+        public int? RightBladderId { get; set; }
+        public BuildingBladder? RightBladder { get; set; }
         public override IEnumerable<ValidationResult> Validate(
             ValidationContext validationContext)
         {

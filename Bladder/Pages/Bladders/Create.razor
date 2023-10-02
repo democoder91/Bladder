@@ -50,7 +50,7 @@
                 <RadzenColumn>
                     <div class="form-group">
                         <label class="form-label">@L["Status"]</label>
-                        <RadzenDropDown @bind-Value=@Bladder.Status Data=@BladderStatusStrings Style="width: 100%;" />
+                        <RadzenDropDown @bind-Value=@Bladder.Status Data=@BladderStatusDictionary TextProperty=Value ValueProperty=Key Style="width: 100%; max-width: 400px;" />
                         <ValidationMessage style="color:red;" For="() => Bladder.Status" />
                     </div>
                 </RadzenColumn>
@@ -72,14 +72,14 @@
 @code {
     public BuildingBladder Bladder { get; set; } = new() { ExpiryDate = DateTime.Now };
     public List<BladderSize> Sizes { get; set; }
-    public List<string> BladderStatusStrings { get; set; } = new();
+    public Dictionary<string, string> BladderStatusDictionary { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         Sizes = await sizeService.GetAllAsync();
         foreach (var item in Enum.GetNames(typeof(BladderStatus)))
         {
-            BladderStatusStrings.Add(L[item]);    
+            BladderStatusDictionary.Add(item, L[item]);    
         }
     }
     public bool ValidateUniqueBladderCode()
