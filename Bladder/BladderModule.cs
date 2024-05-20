@@ -53,6 +53,7 @@ using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
 using Bladder.Services;
+using Volo.Abp.Data;
 
 namespace Bladder;
 
@@ -142,6 +143,8 @@ public class BladderModule : AbpModule
         {
             context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
         }
+
+        
         ConfigureAuthentication(context);
         ConfigureUrls(configuration);
         ConfigureBundles();

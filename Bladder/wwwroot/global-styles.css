@@ -3,16 +3,16 @@ body {
 }
 /* for dim and dark theme styles */
 :root .lpx-theme-dim, :root .lpx-theme-dark {
-    --lpx-logo: url("images/logo/logo-light.png");
-    --lpx-logo-icon: url("images/logo/logo-light-thumbnail.png")
+    --lpx-logo: url('images/big logo.png');
+    --lpx-logo-icon: url('images/small logo.png');
 }
 
 /* for light theme style */
 :root .lpx-theme-light, :root .lpx-brand-logo {
-    --lpx-logo: url("images/logo/logo-dark.png");
-    --lpx-logo-icon: url("/images/logo/logo-dark-thumbnail.png");
+    --lpx-logo: url('images/big logo.png');
+    --lpx-logo-icon: url('images/small logo.png');
 }
 .lpx-brand-logo {
-    --lpx-logo: url("images/logo/logo-dark.png");
-    --lpx-logo-icon: url("/images/logo/logo-dark-thumbnail.png");
+    --lpx-logo: url('images/big logo.png');
+    --lpx-logo-icon: url('images/small logo.png');
 }
