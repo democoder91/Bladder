@@ -41,14 +41,14 @@
                 <div class="form-group">
                     <div class="label">@L["Created At (From)"]</div>
                     @* <InputDate @bind-Value="@CreatedAtFromFilter" class="form-control" /> *@
-                    <RadzenDatePicker @bind-Value=@CreatedAtFromFilter Style="width: 100%;" />
+                    <RadzenDatePicker @bind-Value=@CreatedAtFromFilter Style="width: 100%;" Culture="System.Globalization.CultureInfo.InvariantCulture" />
                 </div>
             </RadzenColumn>
 
             <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Created At (To)"]</div>
-                    <RadzenDatePicker @bind-Value="@CreatedAtToFilter" Style="width: 100%;" />
+                    <RadzenDatePicker @bind-Value="@CreatedAtToFilter" Style="width: 100%;" Culture="System.Globalization.CultureInfo.InvariantCulture" />
                 </div>
             </RadzenColumn>
 
