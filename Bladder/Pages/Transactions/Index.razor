@@ -32,21 +32,23 @@
             <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Bladder Code"]</div>
-                    <InputText @bind-Value="@BladderCodeFilter" class="form-control" />
+                    @* <InputText @bind-Value="@BladderCodeFilter" class="form-control" /> *@
+                    <RadzenTextBox @bind-Value="@BladderCodeFilter" Style="width: 100%;" />
                 </div>
             </RadzenColumn>
 
             <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Created At (From)"]</div>
-                    <InputDate @bind-Value="@CreatedAtFromFilter" class="form-control" />
+                    @* <InputDate @bind-Value="@CreatedAtFromFilter" class="form-control" /> *@
+                    <RadzenDatePicker @bind-Value=@CreatedAtFromFilter Style="width: 100%;" />
                 </div>
             </RadzenColumn>
 
             <RadzenColumn>
                 <div class="form-group">
                     <div class="label">@L["Created At (To)"]</div>
-                    <InputDate @bind-Value="@CreatedAtToFilter" class="form-control" />
+                    <RadzenDatePicker @bind-Value="@CreatedAtToFilter" Style="width: 100%;" />
                 </div>
             </RadzenColumn>
 
@@ -59,7 +61,7 @@
                         {
                             <option value="@type.ToString()">@L[type.ToString()]</option>
                         }
-                    </InputSelect>
+                    </InputSelect>                    
                 </div>
             </RadzenColumn>
         </RadzenRow>
